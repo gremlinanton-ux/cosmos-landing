@@ -27,11 +27,6 @@
 </script>
 <script type="module">
 import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-
 const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -178,15 +173,8 @@ addEventListener('pointermove', e => {
 });
 let mouseX = 0, mouseY = 0, parX = 0, parY = 0;
 
-// --- Post: soft bloom ---
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.4, 0.5, 1.0));
-composer.addPass(new OutputPass());
-
 function resize() {
   renderer.setSize(innerWidth, innerHeight);
-  composer.setSize(innerWidth, innerHeight);
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
 }
@@ -225,7 +213,7 @@ renderer.setAnimationLoop(() => {
   viewerLight.position.copy(camera.position);
   viewerLight.intensity = 180 * (1 + Math.sin(t * 0.4 + 4) * 0.1);
 
-  composer.render();
+  renderer.render(scene, camera);
 });
 </script>
 </body>
