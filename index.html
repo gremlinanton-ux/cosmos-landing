@@ -3,15 +3,368 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Avenor 3D</title>
+<title>Venture Past Our Sky</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/framer-motion@11.11.17/dist/framer-motion.js"></script>
+<script>window.Motion = window.FramerMotion || window.Motion;</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        heading: ['"Instrument Serif"', 'serif'],
+        body: ['Barlow', 'sans-serif']
+      },
+      borderRadius: { DEFAULT: '9999px' }
+    }
+  }
+};
+</script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; background: #000; overflow: hidden; }
-  #scene { position: fixed; inset: 0; display: block; }
+  body { background: #000; }
+  .liquid-glass {
+    background: rgba(255,255,255,0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass::before {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.45) 0%,
+      rgba(255,255,255,0.15) 20%,
+      rgba(255,255,255,0) 40%,
+      rgba(255,255,255,0) 60%,
+      rgba(255,255,255,0.15) 80%,
+      rgba(255,255,255,0.45) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .liquid-glass-strong {
+    background: rgba(255,255,255,0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    border: none;
+    box-shadow: 4px 4px 4px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass-strong::before {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.5) 0%,
+      rgba(255,255,255,0.2) 20%,
+      rgba(255,255,255,0) 40%,
+      rgba(255,255,255,0) 60%,
+      rgba(255,255,255,0.2) 80%,
+      rgba(255,255,255,0.5) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
-<canvas id="scene"></canvas>
+<div id="root"></div>
+
+<script type="text/babel">
+const { motion } = window.Motion;
+
+/* ---------- Icons ---------- */
+const ArrowUpRight = ({ className = "h-4 w-4" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M7 17L17 7" /><path d="M7 7h10v10" />
+  </svg>
+);
+const PlayIcon = ({ className = "h-4 w-4" }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <polygon points="6 4 20 12 6 20 6 4" />
+  </svg>
+);
+const ClockIcon = () => (
+  <svg className="text-white" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" />
+  </svg>
+);
+const GlobeIcon = () => (
+  <svg className="text-white" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z" />
+  </svg>
+);
+
+/* ---------- FadingVideo: rAF-driven crossfade looping ---------- */
+function FadingVideo({ src, className, style }) {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    const FADE_MS = 500, FADE_OUT_LEAD = 0.55;
+    let raf = null;
+    const fadingOutRef = { current: false };
+    const fadeTo = (target, duration = FADE_MS) => {
+      if (raf) cancelAnimationFrame(raf);
+      const from = parseFloat(video.style.opacity || "0");
+      const start = performance.now();
+      const step = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        video.style.opacity = String(from + (target - from) * p);
+        if (p < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    };
+    const onLoaded = () => { video.style.opacity = "0"; video.play(); fadeTo(1); };
+    const onTime = () => {
+      const left = video.duration - video.currentTime;
+      if (!fadingOutRef.current && left <= FADE_OUT_LEAD && left > 0) {
+        fadingOutRef.current = true;
+        fadeTo(0);
+      }
+    };
+    const onEnded = () => {
+      video.style.opacity = "0";
+      setTimeout(() => {
+        video.currentTime = 0;
+        video.play();
+        fadingOutRef.current = false;
+        fadeTo(1);
+      }, 100);
+    };
+    video.addEventListener("loadeddata", onLoaded);
+    video.addEventListener("timeupdate", onTime);
+    video.addEventListener("ended", onEnded);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      video.removeEventListener("loadeddata", onLoaded);
+      video.removeEventListener("timeupdate", onTime);
+      video.removeEventListener("ended", onEnded);
+    };
+  }, []);
+  return (
+    <video ref={ref} src={src} className={className} style={{ opacity: 0, ...style }}
+      autoPlay muted playsInline preload="auto" />
+  );
+}
+
+/* ---------- BlurText: word-by-word blur-in ---------- */
+function BlurText({ text, className }) {
+  const ref = React.useRef(null);
+  const [visible, setVisible] = React.useState(false);
+  React.useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setVisible(true); obs.disconnect(); }
+    }, { threshold: 0.1 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+  return (
+    <p ref={ref} className={className}
+      style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", rowGap: "0.1em" }}>
+      {text.split(" ").map((w, i) => (
+        <motion.span key={i}
+          style={{ display: "inline-block", marginRight: "0.28em" }}
+          initial={{ filter: "blur(10px)", opacity: 0, y: 50 }}
+          animate={visible ? {
+            filter: ["blur(10px)", "blur(5px)", "blur(0px)"],
+            opacity: [0, 0.5, 1],
+            y: [50, -5, 0]
+          } : {}}
+          transition={{ duration: 0.7, times: [0, 0.5, 1], ease: "easeOut", delay: (i * 100) / 1000 }}>
+          {w}
+        </motion.span>
+      ))}
+    </p>
+  );
+}
+
+/* ---------- Entrance wrapper ---------- */
+const FadeIn = ({ delay = 0, className = "", children }) => (
+  <motion.div className={className}
+    initial={{ filter: "blur(10px)", opacity: 0, y: 20 }}
+    animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay, ease: "easeOut" }}>
+    {children}
+  </motion.div>
+);
+
+/* ---------- Navbar ---------- */
+function Navbar() {
+  const links = ["Home", "Voyages", "Worlds", "Innovation", "Plan Launch"];
+  return (
+    <nav className="fixed top-4 left-0 right-0 z-50 flex items-center justify-between px-8 lg:px-16">
+      <div className="liquid-glass rounded-full w-12 h-12 flex items-center justify-center font-heading italic text-white text-2xl">a</div>
+      <div className="hidden md:flex items-center gap-2">
+        <div className="liquid-glass rounded-full px-1.5 py-1.5 flex items-center">
+          {links.map(l => (
+            <a key={l} href="#" className="px-3 py-2 text-sm font-medium text-white/90 font-body">{l}</a>
+          ))}
+          <a href="#" className="bg-white text-black rounded-full px-4 py-2 text-sm font-medium font-body flex items-center gap-1 whitespace-nowrap">
+            Claim a Spot <ArrowUpRight />
+          </a>
+        </div>
+      </div>
+      <div className="w-12 h-12 invisible" />
+    </nav>
+  );
+}
+
+/* ---------- Hero ---------- */
+function Hero() {
+  return (
+    <section className="relative h-screen overflow-hidden bg-black">
+      <canvas id="scene" className="absolute inset-0 w-full h-full z-0"></canvas>
+      <div className="relative z-10 flex flex-col h-full pointer-events-none">
+        <div className="flex-1 flex flex-col items-center justify-center pt-24 px-4 text-center">
+          <FadeIn delay={0.4}>
+            <div className="liquid-glass rounded-full flex items-center gap-2 p-1">
+              <span className="bg-white text-black rounded-full px-3 py-1 text-xs font-semibold font-body">New</span>
+              <span className="text-sm text-white/90 font-body pr-3">Maiden Crewed Voyage to Mars Arrives 2026</span>
+            </div>
+          </FadeIn>
+          <div className="mt-6">
+            <BlurText text="Venture Past Our Sky Across the Universe"
+              className="text-6xl md:text-7xl lg:text-[5.5rem] font-heading italic text-white leading-[0.8] max-w-2xl justify-center tracking-[-4px]" />
+          </div>
+          <FadeIn delay={0.8}>
+            <p className="mt-4 text-sm md:text-base text-white max-w-2xl font-body font-light leading-tight">
+              Discover the universe in ways once unimaginable. Our pioneering vessels and breakthrough engineering bring deep-space exploration within reach—secure and extraordinary.
+            </p>
+          </FadeIn>
+          <FadeIn delay={1.1}>
+            <div className="flex items-center gap-6 mt-6">
+              <a href="#" className="pointer-events-auto liquid-glass-strong rounded-full px-5 py-2.5 text-sm font-medium text-white font-body flex items-center gap-2">
+                Start Your Voyage <ArrowUpRight className="h-5 w-5" />
+              </a>
+              <a href="#" className="pointer-events-auto text-sm font-medium text-white font-body flex items-center gap-2">
+                View Liftoff <PlayIcon className="h-4 w-4" />
+              </a>
+            </div>
+          </FadeIn>
+          <FadeIn delay={1.3}>
+            <div className="flex items-stretch gap-4 mt-8">
+              {[
+                { icon: <ClockIcon />, value: "34.5 Min", label: "Average Videos Watch Time" },
+                { icon: <GlobeIcon />, value: "2.8B+", label: "Users Across the Globe" }
+              ].map(s => (
+                <div key={s.value} className="liquid-glass rounded-[1.25rem] p-5 w-[220px] flex flex-col items-start text-left">
+                  {s.icon}
+                  <div className="mt-8">
+                    <div className="font-heading italic text-white text-4xl tracking-[-1px] leading-none">{s.value}</div>
+                    <div className="text-xs text-white font-body font-light mt-2">{s.label}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+        </div>
+        <FadeIn delay={1.4}>
+          <div className="flex flex-col items-center gap-4 pb-8">
+            <div className="liquid-glass rounded-full px-3.5 py-1 text-xs font-medium text-white font-body">
+              Collaborating with top aerospace pioneers globally
+            </div>
+            <div className="flex items-center gap-12 md:gap-16">
+              {["Aeon", "Vela", "Apex", "Orbit", "Zeno"].map(n => (
+                <span key={n} className="font-heading italic text-white text-2xl md:text-3xl tracking-tight">{n}</span>
+              ))}
+            </div>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- Capabilities ---------- */
+const CARDS = [
+  {
+    title: "AI Scenery",
+    icon: "M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21H5Zm1-4h12l-3.75-5-3 4L9 13l-3 4Z",
+    tags: ["Natural Context", "Photo Realism", "Infinite Settings", "Eco-Vibe"],
+    body: "AI analyzes your product to create indistinguishable natural environments — from Icelandic cliffs to misty forests."
+  },
+  {
+    title: "Batch Production",
+    icon: "M4 6.47 5.76 10H20v8H4V6.47M22 4h-4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.89-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4Z",
+    tags: ["Scale Fast", "Visual Consistency", "Time Saver", "Ready to Post"],
+    body: "Style your entire product line in minutes. Create a unified visual identity for catalogues and social media without weeks of retouching."
+  },
+  {
+    title: "Smart Lighting",
+    icon: "M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1Zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7Z",
+    tags: ["Ray Tracing", "Physical Shadows", "Studio Quality", "Sunlight Sync"],
+    body: "Automatic lighting and material adjustment. Achieve flawless integration with realistic shadows and sunlight."
+  }
+];
+
+function Capabilities() {
+  return (
+    <section className="relative min-h-screen bg-black overflow-hidden">
+      <FadingVideo
+        src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_094631_d30ab262-45ee-4b7d-99f3-5d5848c8ef13.mp4"
+        className="absolute inset-0 w-full h-full object-cover z-0" />
+      <div className="relative z-10 px-8 md:px-16 lg:px-20 pt-24 pb-10 flex flex-col min-h-screen">
+        <div className="mb-auto">
+          <p className="text-sm font-body text-white/80 mb-6">// Capabilities</p>
+          <h2 className="font-heading italic text-white text-6xl md:text-7xl lg:text-[6rem] leading-[0.9] tracking-[-3px]">
+            Production<br />evolved
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
+          {CARDS.map(c => (
+            <div key={c.title} className="liquid-glass rounded-[1.25rem] p-6 min-h-[360px] flex flex-col">
+              <div className="flex items-start justify-between gap-4">
+                <div className="liquid-glass rounded-[0.75rem] w-11 h-11 flex items-center justify-center shrink-0">
+                  <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor"><path d={c.icon} /></svg>
+                </div>
+                <div className="flex flex-wrap justify-end gap-1.5 max-w-[70%]">
+                  {c.tags.map(t => (
+                    <span key={t} className="liquid-glass rounded-full px-3 py-1 text-[11px] text-white/90 font-body whitespace-nowrap">{t}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="flex-1" />
+              <div className="mt-6">
+                <h3 className="font-heading italic text-white text-3xl md:text-4xl tracking-[-1px] leading-none">{c.title}</h3>
+                <p className="mt-3 text-sm text-white/90 font-body font-light leading-snug max-w-[32ch]">{c.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---------- App ---------- */
+function App() {
+  return (
+    <>
+      <Navbar />
+      <Hero />
+      <Capabilities />
+    </>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
 
 <script type="importmap">
 { "imports": {
@@ -21,188 +374,208 @@
 </script>
 <script type="module">
 import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const canvas = document.getElementById('scene');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.4;
+function init() {
+  const canvas = document.getElementById('scene');
+  if (!canvas) { requestAnimationFrame(init); return; }
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000000);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.7;
 
-const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
-camera.position.set(0, 0, 7);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x000000);
 
-// --- Environment: brand palette gradient  #FF9E64 / #D6549F / #6E3FD1 ---
-const envCanvas = document.createElement('canvas');
-envCanvas.width = 512; envCanvas.height = 256;
-const ectx = envCanvas.getContext('2d');
-const grad = ectx.createLinearGradient(0, 0, 512, 256);
-grad.addColorStop(0.0, '#170b2e');
-grad.addColorStop(0.22, '#6E3FD1');
-grad.addColorStop(0.45, '#D6549F');
-grad.addColorStop(0.62, '#FF9E64');
-grad.addColorStop(0.8, '#6E3FD1');
-grad.addColorStop(1.0, '#0d0620');
-ectx.fillStyle = grad;
-ectx.fillRect(0, 0, 512, 256);
-// bright hotspots so glass gets specular streaks
-for (const [x, y, r, c] of [
-  [380, 90, 90, 'rgba(255,158,100,0.95)'],
-  [140, 160, 70, 'rgba(110,63,209,0.9)'],
-  [260, 60, 50, 'rgba(255,255,255,0.85)'],
-  [60, 70, 55, 'rgba(214,84,159,0.9)'],
-  [460, 180, 60, 'rgba(255,158,100,0.7)'],
-  [320, 200, 45, 'rgba(214,84,159,0.8)']
-]) {
-  const g = ectx.createRadialGradient(x, y, 0, x, y, r);
-  g.addColorStop(0, c); g.addColorStop(1, 'rgba(0,0,0,0)');
-  ectx.fillStyle = g;
+  const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
+  camera.position.set(0, 0.2, 7);
+
+  // --- Environment: brand palette gradient  #FF9E64 / #D6549F / #6E3FD1 ---
+  const envCanvas = document.createElement('canvas');
+  envCanvas.width = 512; envCanvas.height = 256;
+  const ectx = envCanvas.getContext('2d');
+  const grad = ectx.createLinearGradient(0, 0, 512, 256);
+  grad.addColorStop(0.0, '#170b2e');
+  grad.addColorStop(0.22, '#6E3FD1');
+  grad.addColorStop(0.45, '#D6549F');
+  grad.addColorStop(0.62, '#FF9E64');
+  grad.addColorStop(0.8, '#6E3FD1');
+  grad.addColorStop(1.0, '#0d0620');
+  ectx.fillStyle = grad;
   ectx.fillRect(0, 0, 512, 256);
+  for (const [x, y, r, c] of [
+    [380, 90, 90, 'rgba(255,158,100,0.7)'],
+    [140, 160, 70, 'rgba(110,63,209,0.9)'],
+    [260, 60, 50, 'rgba(255,255,255,0.5)'],
+    [60, 70, 55, 'rgba(214,84,159,0.9)'],
+    [460, 180, 60, 'rgba(255,158,100,0.7)'],
+    [320, 200, 45, 'rgba(214,84,159,0.8)']
+  ]) {
+    const g = ectx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, c); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ectx.fillStyle = g;
+    ectx.fillRect(0, 0, 512, 256);
+  }
+  const envTex = new THREE.CanvasTexture(envCanvas);
+  envTex.mapping = THREE.EquirectangularReflectionMapping;
+  envTex.colorSpace = THREE.SRGBColorSpace;
+  scene.environment = envTex;
+
+  // --- 3D logo: Avenor mark — right stroke with apex, cut left stroke, small accent ---
+  const rightStroke = new THREE.Shape([
+    new THREE.Vector2(-0.205, 0.78),
+    new THREE.Vector2(0, 1.15),
+    new THREE.Vector2(1.05, -0.75),
+    new THREE.Vector2(0.5, -0.75),
+    new THREE.Vector2(0, 0.24)
+  ]);
+  const leftStroke = new THREE.Shape([
+    new THREE.Vector2(-1.05, -0.75),
+    new THREE.Vector2(-0.36, 0.50),
+    new THREE.Vector2(-0.16, -0.02),
+    new THREE.Vector2(-0.5, -0.75)
+  ]);
+  const accent = new THREE.Shape([
+    new THREE.Vector2(0, -0.35),
+    new THREE.Vector2(0.16, -0.72),
+    new THREE.Vector2(-0.16, -0.72)
+  ]);
+  const geo = new THREE.ExtrudeGeometry([rightStroke, leftStroke, accent], {
+    depth: 0.45,
+    bevelEnabled: true,
+    bevelThickness: 0.18,
+    bevelSize: 0.09,
+    bevelSegments: 10
+  });
+  geo.center();
+
+  const mat = new THREE.MeshPhysicalMaterial({
+    transmission: 1,
+    thickness: 0.25,
+    roughness: 0.02,
+    metalness: 0,
+    ior: 1.31,
+    iridescence: 0.5,
+    iridescenceIOR: 1.6,
+    iridescenceThicknessRange: [100, 400],
+    clearcoat: 1,
+    clearcoatRoughness: 0.02,
+    envMapIntensity: 2.5,
+    attenuationColor: new THREE.Color(0xffb0c0),
+    attenuationDistance: 3.5,
+    color: 0xffffff
+  });
+  const logo = new THREE.Mesh(geo, mat);
+  logo.scale.setScalar(1.15);
+  logo.position.y = -0.9;
+  logo.rotation.x = -0.12;
+  logo.rotation.y = 0.35;
+  scene.add(logo);
+  window.__logo = logo;
+
+  // glowing gradient backdrop behind the glass — refracted colors
+  const glowCanvas = document.createElement('canvas');
+  glowCanvas.width = glowCanvas.height = 512;
+  const gctx = glowCanvas.getContext('2d');
+  gctx.fillStyle = '#000';
+  gctx.fillRect(0, 0, 512, 512);
+  gctx.filter = 'blur(50px)';
+  for (const [x, y, r, c] of [
+    [140, 250, 230, 'rgba(110,63,209,0.95)'],
+    [300, 300, 190, 'rgba(214,84,159,0.9)'],
+    [340, 390, 170, 'rgba(255,158,100,0.95)'],
+    [300, 340, 90, 'rgba(255,230,200,0.6)']
+  ]) {
+    const g = gctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, c);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    gctx.fillStyle = g;
+    gctx.fillRect(0, 0, 512, 512);
+  }
+  const glowTex = new THREE.CanvasTexture(glowCanvas);
+  glowTex.colorSpace = THREE.SRGBColorSpace;
+  const backdrop = new THREE.Mesh(
+    new THREE.PlaneGeometry(9, 9),
+    new THREE.MeshBasicMaterial({ map: glowTex, depthWrite: false })
+  );
+  backdrop.position.set(0, -0.9, -3.5);
+  scene.add(backdrop);
+
+  // distant rim lights for soft glints (far away to avoid hot corner speculars)
+  const lights = [
+    [0xFF9E64, 80, [9, -3, 6]],
+    [0x6E3FD1, 70, [-9, 3, 6]],
+    [0xD6549F, 65, [-6, -7.5, 9]],
+    [0xFF9E64, 50, [7.5, 6, -6]],
+    [0xD6549F, 50, [0, 9, 9]]
+  ];
+  for (const [c, i, p] of lights) {
+    const l = new THREE.PointLight(c, i);
+    l.position.set(...p);
+    scene.add(l);
+  }
+  scene.add(new THREE.AmbientLight(0x140a22, 2));
+
+  // --- Stars ---
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 1200;
+  const starPos = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i++) {
+    const r = 30 + Math.random() * 40;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    starPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    starPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    starPos[i * 3 + 2] = r * Math.cos(phi);
+  }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.7 }));
+  scene.add(stars);
+
+  // --- Interaction: drag to rotate the logo ---
+  let dragging = false, px = 0, py = 0;
+  let velX = 0, velY = 0;
+  canvas.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; });
+  addEventListener('pointerup', () => dragging = false);
+  addEventListener('pointermove', e => {
+    if (!dragging) return;
+    velY = (e.clientX - px) * 0.005;
+    velX = (e.clientY - py) * 0.005;
+    px = e.clientX; py = e.clientY;
+  });
+
+  // --- Bloom glow ---
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.5, 1.0, 1.1);
+  composer.addPass(bloom);
+  composer.addPass(new OutputPass());
+
+  function resize() {
+    renderer.setSize(innerWidth, innerHeight);
+    composer.setSize(innerWidth, innerHeight);
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+  }
+  addEventListener('resize', resize);
+  resize();
+
+  const clock = new THREE.Clock();
+  renderer.setAnimationLoop(() => {
+    const t = clock.getElapsedTime();
+    logo.rotation.y += velY + (window.__spin ?? 0.0015);
+    logo.rotation.x += velX;
+    velX *= 0.95; velY *= 0.95;
+    logo.position.y = -0.9 + Math.sin(t * 0.6) * 0.06;
+    stars.rotation.y = t * 0.005;
+    composer.render();
+  });
 }
-const envTex = new THREE.CanvasTexture(envCanvas);
-envTex.mapping = THREE.EquirectangularReflectionMapping;
-envTex.colorSpace = THREE.SRGBColorSpace;
-scene.environment = envTex;
-
-// --- 3D logo: Avenor mark — right stroke with apex, cut left stroke, small accent ---
-// right stroke including the apex; its lower-left edge is the cut line
-const rightStroke = new THREE.Shape([
-  new THREE.Vector2(-0.205, 0.78),
-  new THREE.Vector2(0, 1.15),
-  new THREE.Vector2(1.05, -0.75),
-  new THREE.Vector2(0.5, -0.75),
-  new THREE.Vector2(0, 0.24)
-]);
-// left stroke, terminated by the diagonal cut below the apex
-const leftStroke = new THREE.Shape([
-  new THREE.Vector2(-1.05, -0.75),
-  new THREE.Vector2(-0.30, 0.60),
-  new THREE.Vector2(-0.10, 0.05),
-  new THREE.Vector2(-0.5, -0.75)
-]);
-// small inner accent triangle at the base
-const accent = new THREE.Shape([
-  new THREE.Vector2(0, -0.35),
-  new THREE.Vector2(0.16, -0.72),
-  new THREE.Vector2(-0.16, -0.72)
-]);
-const geo = new THREE.ExtrudeGeometry([rightStroke, leftStroke, accent], {
-  depth: 0.45,
-  bevelEnabled: true,
-  bevelThickness: 0.12,
-  bevelSize: 0.05,
-  bevelSegments: 8
-});
-geo.center();
-
-// procedural noise: watery bump + varying iridescence film thickness -> gradient swirls
-const bumpCanvas = document.createElement('canvas');
-bumpCanvas.width = bumpCanvas.height = 256;
-const bctx = bumpCanvas.getContext('2d');
-bctx.fillStyle = '#404040';
-bctx.fillRect(0, 0, 256, 256);
-bctx.filter = 'blur(28px)';
-for (let i = 0; i < 5; i++) {
-  const x = Math.random() * 256, y = Math.random() * 256, r = 100 + Math.random() * 120;
-  const g = bctx.createRadialGradient(x, y, 0, x, y, r);
-  const vv = Math.floor(Math.random() * 255);
-  g.addColorStop(0, `rgba(${vv},${vv},${vv},0.55)`);
-  g.addColorStop(1, 'rgba(64,64,64,0)');
-  bctx.fillStyle = g;
-  bctx.fillRect(0, 0, 256, 256);
-}
-const bumpTex = new THREE.CanvasTexture(bumpCanvas);
-bumpTex.wrapS = bumpTex.wrapT = THREE.RepeatWrapping;
-
-const mat = new THREE.MeshPhysicalMaterial({
-  bumpMap: bumpTex,
-  bumpScale: 0.5,
-  iridescenceThicknessMap: bumpTex,
-  transmission: 1,
-  thickness: 0.5,
-  roughness: 0.03,
-  metalness: 0,
-  ior: 1.31,
-  iridescence: 1,
-  iridescenceIOR: 1.9,
-  iridescenceThicknessRange: [150, 1200],
-  clearcoat: 1,
-  clearcoatRoughness: 0.04,
-  envMapIntensity: 4,
-  attenuationColor: new THREE.Color(0xffb0c0),
-  attenuationDistance: 3.5,
-  color: 0xffffff
-});
-const logo = new THREE.Mesh(geo, mat);
-logo.scale.setScalar(1.15);
-logo.rotation.x = -0.12;
-logo.rotation.y = 0.35;
-scene.add(logo);
-window.__logo = logo;
-
-// brand-colored rim lights for glints from different sides
-const lights = [
-  [0xFF9E64, 70, [3, -1, 2]],
-  [0x6E3FD1, 55, [-3, 1, 2]],
-  [0xD6549F, 50, [-2, -2.5, 3]],
-  [0xFF9E64, 30, [2.5, 2, -2]],
-  [0xfff0e0, 35, [0, 3, 3]]
-];
-for (const [c, i, p] of lights) {
-  const l = new THREE.PointLight(c, i);
-  l.position.set(...p);
-  scene.add(l);
-}
-scene.add(new THREE.AmbientLight(0x140a22, 2));
-
-// --- Stars ---
-const starGeo = new THREE.BufferGeometry();
-const starCount = 1200;
-const starPos = new Float32Array(starCount * 3);
-for (let i = 0; i < starCount; i++) {
-  const r = 30 + Math.random() * 40;
-  const theta = Math.random() * Math.PI * 2;
-  const phi = Math.acos(2 * Math.random() - 1);
-  starPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-  starPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-  starPos[i * 3 + 2] = r * Math.cos(phi);
-}
-starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.7 }));
-scene.add(stars);
-
-// --- Interaction: drag to rotate the logo ---
-let dragging = false, px = 0, py = 0;
-let velX = 0, velY = 0;
-canvas.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; });
-addEventListener('pointerup', () => dragging = false);
-addEventListener('pointermove', e => {
-  if (!dragging) return;
-  velY = (e.clientX - px) * 0.005;
-  velX = (e.clientY - py) * 0.005;
-  px = e.clientX; py = e.clientY;
-});
-
-function resize() {
-  renderer.setSize(innerWidth, innerHeight);
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-}
-addEventListener('resize', resize);
-resize();
-
-const clock = new THREE.Clock();
-renderer.setAnimationLoop(() => {
-  const t = clock.getElapsedTime();
-  logo.rotation.y += velY + 0.0015;
-  logo.rotation.x += velX;
-  velX *= 0.95; velY *= 0.95;
-  logo.position.y = Math.sin(t * 0.6) * 0.06; // gentle float, centered
-  stars.rotation.y = t * 0.005;
-  renderer.render(scene, camera);
-});
+init();
 </script>
 </body>
 </html>
