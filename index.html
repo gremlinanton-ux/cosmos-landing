@@ -104,7 +104,7 @@ const mat = new THREE.MeshPhysicalMaterial({
   transmission: 1,
   thickness: 0.6,
   ior: 1.52,
-  roughness: 0.16,
+  roughness: 0.22,
   metalness: 0,
   iridescence: 1,
   iridescenceIOR: 1.4,
@@ -134,39 +134,18 @@ const rim = new THREE.DirectionalLight(0xD6549F, 0.8);
 rim.position.set(0, -5, -4);
 scene.add(rim);
 
-// three visible glowing orbs (brand colors) at the screen edges;
-// each carries a real light so its color falls onto the glass
-const orbCanvas = document.createElement('canvas');
-orbCanvas.width = orbCanvas.height = 256;
-const octx = orbCanvas.getContext('2d');
-const og = octx.createRadialGradient(128, 128, 0, 128, 128, 128);
-og.addColorStop(0, 'rgba(255,255,255,1)');
-og.addColorStop(0.25, 'rgba(255,255,255,0.55)');
-og.addColorStop(0.6, 'rgba(255,255,255,0.12)');
-og.addColorStop(1, 'rgba(255,255,255,0)');
-octx.fillStyle = og;
-octx.fillRect(0, 0, 256, 256);
-const orbTex = new THREE.CanvasTexture(orbCanvas);
-
-const orbs = [];
-// nx: -1..1 across the visible width, so orbs hug the screen edges at any aspect
-for (const [color, nx, pos, scale] of [
-  [0x6E3FD1, -0.82, [0, 2.0, -0.5], 2.6],
-  [0xFF9E64, 0.85, [0, 1.5, -0.5], 2.2],
-  [0xD6549F, -0.78, [0, -2.3, -1], 2.0]
-]) {
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: orbTex, color, transparent: true,
-    blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.85
-  }));
-  sprite.position.set(...pos);
-  sprite.scale.setScalar(scale);
-  scene.add(sprite);
-  const light = new THREE.PointLight(color, 30);
-  light.position.set(...pos);
-  scene.add(light);
-  orbs.push({ sprite, light, base: pos.slice(), nx, phase: Math.random() * Math.PI * 2 });
-}
+// three invisible brand-color lights, far from the glass:
+// purple upper-left, orange upper-right, pink at the viewer's position
+// (the pink one travels with the camera so the front faces always catch a sheen)
+const purpleLight = new THREE.PointLight(0x6E3FD1, 45);
+purpleLight.position.set(-6, 4, 3);
+scene.add(purpleLight);
+const orangeLight = new THREE.PointLight(0xFF9E64, 45);
+orangeLight.position.set(6, 3, 3);
+scene.add(orangeLight);
+const viewerLight = new THREE.PointLight(0xD6549F, 180);
+viewerLight.position.copy(camera.position);
+scene.add(viewerLight);
 
 // ultra-soft floating dust
 const dustGeo = new THREE.BufferGeometry();
@@ -202,7 +181,7 @@ let mouseX = 0, mouseY = 0, parX = 0, parY = 0;
 // --- Post: soft bloom ---
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.45, 0.6, 0.8));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.4, 0.5, 1.0));
 composer.addPass(new OutputPass());
 
 function resize() {
@@ -240,15 +219,11 @@ renderer.setAnimationLoop(() => {
   dust.rotation.y = t * 0.008;
   dust.position.y = Math.sin(t * 0.2) * 0.15;
 
-  // orbs breathe gently, their light follows
-  const halfW = Math.tan(camera.fov * Math.PI / 360) * 7.5 * camera.aspect;
-  for (const o of orbs) {
-    o.sprite.position.x = o.nx * halfW;
-    o.sprite.position.y = o.base[1] + Math.sin(t * 0.4 + o.phase) * 0.15;
-    o.sprite.material.opacity = 0.75 + Math.sin(t * 0.6 + o.phase) * 0.12;
-    o.light.position.copy(o.sprite.position);
-    o.light.intensity = 30 * (1 + Math.sin(t * 0.8 + o.phase) * 0.12);
-  }
+  // gentle breathing of the invisible lights; viewer light rides the camera
+  purpleLight.intensity = 45 * (1 + Math.sin(t * 0.5) * 0.12);
+  orangeLight.intensity = 45 * (1 + Math.sin(t * 0.6 + 2) * 0.12);
+  viewerLight.position.copy(camera.position);
+  viewerLight.intensity = 180 * (1 + Math.sin(t * 0.4 + 4) * 0.1);
 
   composer.render();
 });
