@@ -27,7 +27,6 @@
 </script>
 <script type="module">
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -37,7 +36,7 @@ const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
+renderer.toneMappingExposure = 1.5;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
@@ -45,9 +44,30 @@ scene.background = new THREE.Color(0x000000);
 const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.1, 100);
 camera.position.set(0, 0, 7);
 
-// invisible HDRI studio: neutral room with large soft white area lights
-const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+// invisible dark studio: black void with large soft colored softboxes (brand palette)
+// so color exists only as reflections and rim glow, never as a texture
+const envCanvas = document.createElement('canvas');
+envCanvas.width = 1024; envCanvas.height = 512;
+const ectx = envCanvas.getContext('2d');
+ectx.fillStyle = '#000';
+ectx.fillRect(0, 0, 1024, 512);
+for (const [x, y, r, c] of [
+  [850, 200, 420, 'rgba(255,158,100,0.9)'],   // #FF9E64
+  [200, 180, 380, 'rgba(110,63,209,0.9)'],    // #6E3FD1
+  [520, 380, 360, 'rgba(214,84,159,0.85)'],   // #D6549F
+  [520, 60, 250,  'rgba(255,220,190,0.5)'],
+  [40, 420, 260,  'rgba(255,158,100,0.6)']
+]) {
+  const g = ectx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, c);
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ectx.fillStyle = g;
+  ectx.fillRect(0, 0, 1024, 512);
+}
+const envTex = new THREE.CanvasTexture(envCanvas);
+envTex.mapping = THREE.EquirectangularReflectionMapping;
+envTex.colorSpace = THREE.SRGBColorSpace;
+scene.environment = envTex;
 
 // --- AVENOR mark: right stroke with apex, cut left stroke, small accent ---
 const rightStroke = new THREE.Shape([
@@ -78,19 +98,22 @@ const geo = new THREE.ExtrudeGeometry([rightStroke, leftStroke, accent], {
 });
 geo.center();
 
-// premium frosted crystal glass
+// transparent crystal glass — body passes the background, color lives in reflections
 const mat = new THREE.MeshPhysicalMaterial({
   color: 0xffffff,
-  transmission: 0.88,
-  thickness: 1.2,
+  transmission: 1,
+  thickness: 0.6,
   ior: 1.52,
-  roughness: 0.1,
+  roughness: 0.16,
   metalness: 0,
+  iridescence: 1,
+  iridescenceIOR: 1.4,
+  iridescenceThicknessRange: [150, 900],
   clearcoat: 1,
-  clearcoatRoughness: 0.06,
-  envMapIntensity: 1.6,
-  attenuationColor: new THREE.Color(0xf4f6ff),
-  attenuationDistance: 2.5,
+  clearcoatRoughness: 0.03,
+  envMapIntensity: 4,
+  attenuationColor: new THREE.Color(0xffd9c4),
+  attenuationDistance: 4,
   specularIntensity: 1
 });
 const logo = new THREE.Mesh(geo, mat);
@@ -100,13 +123,21 @@ logo.rotation.y = 0.3;
 scene.add(logo);
 window.__logo = logo;
 
-// large soft white key/fill for traveling highlights on top of the room env
-const key = new THREE.DirectionalLight(0xffffff, 1.6);
+// distant palette rim lights for colored glints on the bevels
+const key = new THREE.DirectionalLight(0xFF9E64, 1.2);
 key.position.set(4, 6, 5);
 scene.add(key);
-const fill = new THREE.DirectionalLight(0xffffff, 0.5);
+const fill = new THREE.DirectionalLight(0x6E3FD1, 0.7);
 fill.position.set(-6, -2, 4);
 scene.add(fill);
+const rim = new THREE.DirectionalLight(0xD6549F, 0.8);
+rim.position.set(0, -5, -4);
+scene.add(rim);
+for (const [c, i, p] of [[0xFF9E64, 40, [6, -2, 4]], [0x6E3FD1, 35, [-6, 2, 4]], [0xD6549F, 30, [-4, -5, 6]]]) {
+  const l = new THREE.PointLight(c, i);
+  l.position.set(...p);
+  scene.add(l);
+}
 
 // ultra-soft floating dust
 const dustGeo = new THREE.BufferGeometry();
@@ -142,7 +173,7 @@ let mouseX = 0, mouseY = 0, parX = 0, parY = 0;
 // --- Post: soft bloom ---
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.35, 1.0, 0.9));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.65, 0.9, 0.75));
 composer.addPass(new OutputPass());
 
 function resize() {
