@@ -161,10 +161,9 @@ const glowCanvas = document.createElement('canvas');
 glowCanvas.width = glowCanvas.height = 256;
 const gctx = glowCanvas.getContext('2d');
 const gg = gctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-gg.addColorStop(0, 'rgba(255,255,255,0.85)');
-gg.addColorStop(0.15, 'rgba(255,255,255,0.35)');
-gg.addColorStop(0.4, 'rgba(255,255,255,0.1)');
-gg.addColorStop(0.7, 'rgba(255,255,255,0.025)');
+gg.addColorStop(0, 'rgba(255,255,255,0.28)');
+gg.addColorStop(0.3, 'rgba(255,255,255,0.18)');
+gg.addColorStop(0.6, 'rgba(255,255,255,0.07)');
 gg.addColorStop(1, 'rgba(255,255,255,0)');
 gctx.fillStyle = gg;
 gctx.fillRect(0, 0, 256, 256);
@@ -172,8 +171,8 @@ const glowTex = new THREE.CanvasTexture(glowCanvas);
 
 const starGlows = [];
 for (const [nx, y, scale, phase] of [
-  [-0.85, 2.2, 3.4, 0],
-  [0.85, -2.2, 3.0, 2.4]
+  [-0.85, 2.2, 8.5, 0],
+  [0.85, -2.2, 7.5, 2.4]
 ]) {
   const s = new THREE.Sprite(new THREE.SpriteMaterial({
     map: glowTex, color: 0xffffff, transparent: true, opacity: 0.4,
