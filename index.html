@@ -142,6 +142,20 @@ const viewerLight = new THREE.PointLight(0xD6549F, 180);
 viewerLight.position.copy(camera.position);
 scene.add(viewerLight);
 
+// extra invisible lights covering the previously dark zones
+const extraLights = [];
+for (const [color, intensity, pos] of [
+  [0xFF9E64, 45, [5, -4, 3]],    // bottom-right
+  [0x6E3FD1, 45, [-5, -4, 3]],   // bottom-left
+  [0xD6549F, 40, [0, 5, -3]],    // top-back
+  [0xFF9E64, 35, [0, -1, -6]]    // back rim
+]) {
+  const l = new THREE.PointLight(color, intensity);
+  l.position.set(...pos);
+  scene.add(l);
+  extraLights.push({ l, base: intensity, phase: extraLights.length * 1.7 });
+}
+
 // ultra-soft floating dust
 const dustGeo = new THREE.BufferGeometry();
 const DUST = 160;
@@ -212,6 +226,9 @@ renderer.setAnimationLoop(() => {
   orangeLight.intensity = 45 * (1 + Math.sin(t * 0.6 + 2) * 0.12);
   viewerLight.position.copy(camera.position);
   viewerLight.intensity = 180 * (1 + Math.sin(t * 0.4 + 4) * 0.1);
+  for (const e of extraLights) {
+    e.l.intensity = e.base * (1 + Math.sin(t * 0.55 + e.phase) * 0.12);
+  }
 
   renderer.render(scene, camera);
 });
