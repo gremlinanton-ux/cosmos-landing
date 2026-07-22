@@ -195,7 +195,7 @@ for (let i = 0; i < DUST; i++) {
 }
 dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
 const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
-  color: 0xffffff, size: 0.025, transparent: true, opacity: 0.22,
+  color: 0xffffff, size: 0.03, transparent: true, opacity: 0.264,
   depthWrite: false, sizeAttenuation: true
 }));
 scene.add(dust);
@@ -238,16 +238,18 @@ renderer.setAnimationLoop(() => {
   scene.environmentRotation.y = t * 0.06;
   key.position.set(Math.sin(t * 0.1) * 6, 6, Math.cos(t * 0.1) * 6);
 
-  // cinematic camera: subtle dolly + gentle mouse parallax
-  parX += (mouseX * 0.25 - parX) * 0.02;
-  parY += (-mouseY * 0.18 - parY) * 0.02;
-  camera.position.x = parX + Math.sin(t * 0.11) * 0.12;
-  camera.position.y = parY + Math.sin(t * 0.09) * 0.08;
+  // cinematic camera: subtle dolly only — the logo never reacts to the mouse
+  camera.position.x = Math.sin(t * 0.11) * 0.12;
+  camera.position.y = Math.sin(t * 0.09) * 0.08;
   camera.position.z = 7 + Math.sin(t * 0.06) * 0.25;
   camera.lookAt(0, 0, 0);
 
+  // stars drift with the mouse (eased parallax)
+  parX += (-mouseX * 0.6 - parX) * 0.03;
+  parY += (mouseY * 0.45 - parY) * 0.03;
   dust.rotation.y = t * 0.008;
-  dust.position.y = Math.sin(t * 0.2) * 0.15;
+  dust.position.x = parX;
+  dust.position.y = parY + Math.sin(t * 0.2) * 0.15;
 
   // gentle breathing of the invisible lights; viewer light rides the camera
   purpleLight.intensity = 45 * (1 + Math.sin(t * 0.5) * 0.12);
