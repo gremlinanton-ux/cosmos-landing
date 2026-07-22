@@ -279,16 +279,24 @@ const envCanvas = document.createElement('canvas');
 envCanvas.width = 512; envCanvas.height = 256;
 const ectx = envCanvas.getContext('2d');
 const grad = ectx.createLinearGradient(0, 0, 512, 256);
-grad.addColorStop(0.0, '#0a0a2e');
-grad.addColorStop(0.25, '#2a4db8');
-grad.addColorStop(0.45, '#c96a1e');
-grad.addColorStop(0.6, '#f5a623');
-grad.addColorStop(0.75, '#8a3fd1');
-grad.addColorStop(1.0, '#05050f');
+grad.addColorStop(0.0, '#120b3a');
+grad.addColorStop(0.2, '#2a4db8');
+grad.addColorStop(0.38, '#e04fb0');
+grad.addColorStop(0.52, '#f5a623');
+grad.addColorStop(0.66, '#ff5e2a');
+grad.addColorStop(0.8, '#8a3fd1');
+grad.addColorStop(1.0, '#0a1a4f');
 ectx.fillStyle = grad;
 ectx.fillRect(0, 0, 512, 256);
 // bright hotspots so glass gets specular streaks
-for (const [x, y, r, c] of [[380, 90, 90, 'rgba(255,200,120,0.9)'], [140, 160, 70, 'rgba(120,160,255,0.8)'], [260, 60, 50, 'rgba(255,255,255,0.7)']]) {
+for (const [x, y, r, c] of [
+  [380, 90, 90, 'rgba(255,200,120,0.95)'],
+  [140, 160, 70, 'rgba(120,160,255,0.9)'],
+  [260, 60, 50, 'rgba(255,255,255,0.85)'],
+  [60, 70, 55, 'rgba(255,90,200,0.85)'],
+  [460, 180, 60, 'rgba(90,255,220,0.7)'],
+  [320, 200, 45, 'rgba(255,240,180,0.8)']
+]) {
   const g = ectx.createRadialGradient(x, y, 0, x, y, r);
   g.addColorStop(0, c); g.addColorStop(1, 'rgba(0,0,0,0)');
   ectx.fillStyle = g;
@@ -300,45 +308,62 @@ envTex.colorSpace = THREE.SRGBColorSpace;
 scene.environment = envTex;
 
 // --- Droplet: sphere deformed into a teardrop, real interactive 3D mesh ---
-const geo = new THREE.SphereGeometry(1.6, 128, 128);
+const geo = new THREE.SphereGeometry(1.6, 160, 160);
 const pos = geo.attributes.position;
 const v = new THREE.Vector3();
+const dir = new THREE.Vector3();
+// layered trig pseudo-noise for organic lumps and dents
+const noise = (x, y, z) =>
+  Math.sin(x * 1.8 + y * 1.1) * Math.cos(z * 1.5 + x * 0.7) * 0.55 +
+  Math.sin(y * 2.9 + z * 2.1 + 1.3) * 0.28 +
+  Math.cos(x * 4.2 + z * 3.6 + y * 2.4) * 0.17;
 for (let i = 0; i < pos.count; i++) {
   v.fromBufferAttribute(pos, i);
+  dir.copy(v).normalize();
+  // chaotic bumps and dents along the surface normal
+  v.addScaledVector(dir, noise(v.x, v.y, v.z) * 0.34);
   const t = (v.y / 1.6 + 1) / 2;          // 0 bottom .. 1 top
-  const squeeze = 1 - 0.45 * Math.pow(t, 2.2);  // narrow toward the top
+  const squeeze = 1 - 0.4 * Math.pow(t, 2.2);   // narrow toward the top
   v.x *= squeeze;
   v.z *= squeeze;
-  v.y *= 1.15 + 0.25 * Math.pow(t, 3);    // stretch the tip upward
+  v.y *= 1.12 + 0.22 * Math.pow(t, 3);    // stretch the tip upward
   pos.setXYZ(i, v.x, v.y, v.z);
 }
 geo.computeVertexNormals();
 
 const mat = new THREE.MeshPhysicalMaterial({
   transmission: 1,
-  thickness: 1.8,
-  roughness: 0.08,
+  thickness: 0.5,
+  roughness: 0.03,
   metalness: 0,
-  ior: 1.4,
+  ior: 1.31,
   iridescence: 1,
-  iridescenceIOR: 1.6,
-  iridescenceThicknessRange: [100, 800],
+  iridescenceIOR: 1.9,
+  iridescenceThicknessRange: [150, 1200],
   clearcoat: 1,
-  clearcoatRoughness: 0.1,
-  envMapIntensity: 1.6,
+  clearcoatRoughness: 0.04,
+  envMapIntensity: 2.2,
+  attenuationColor: new THREE.Color(0xffe0c0),
+  attenuationDistance: 3.5,
   color: 0xffffff
 });
 const droplet = new THREE.Mesh(geo, mat);
 droplet.position.y = -0.9;
 scene.add(droplet);
 
-// warm/cool rim lights matching the reference gradient
-const warm = new THREE.PointLight(0xff8c2a, 60);
-warm.position.set(3, -1, 2);
-scene.add(warm);
-const cool = new THREE.PointLight(0x3a6cff, 40);
-cool.position.set(-3, 1, 2);
-scene.add(cool);
+// multi-colored rim lights for glints from different sides
+const lights = [
+  [0xff8c2a, 70, [3, -1, 2]],     // warm orange, right
+  [0x3a6cff, 50, [-3, 1, 2]],     // deep blue, left
+  [0xff4fd8, 45, [-2, -2.5, 3]],  // magenta, lower-left front
+  [0x4fffd0, 30, [2.5, 2, -2]],   // teal, upper-right back
+  [0xfff0b0, 35, [0, 3, 3]]       // warm white, top front
+];
+for (const [c, i, p] of lights) {
+  const l = new THREE.PointLight(c, i);
+  l.position.set(...p);
+  scene.add(l);
+}
 scene.add(new THREE.AmbientLight(0x111122, 2));
 
 // --- Stars ---
