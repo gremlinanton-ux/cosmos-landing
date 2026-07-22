@@ -3,255 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Venture Past Our Sky</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Avenor 3D</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    background: #000;
-    color: #fff;
-    font-family: 'Inter', sans-serif;
-    overflow: hidden;
-  }
-  #scene {
-    position: fixed;
-    inset: 0;
-    display: block;
-  }
-  .ui {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    pointer-events: none;
-    z-index: 10;
-  }
-  .ui a, .ui button { pointer-events: auto; }
-
-  nav {
-    margin-top: 22px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(12px);
-    border-radius: 999px;
-    padding: 6px 8px;
-    pointer-events: auto;
-  }
-  .logo {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.1);
-    display: grid; place-items: center;
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-size: 17px;
-    margin-right: 6px;
-  }
-  nav a {
-    color: rgba(255,255,255,0.75);
-    text-decoration: none;
-    font-size: 13px;
-    padding: 7px 13px;
-    border-radius: 999px;
-    transition: color .2s, background .2s;
-  }
-  nav a:hover { color: #fff; background: rgba(255,255,255,0.08); }
-  nav a.cta {
-    background: #fff;
-    color: #000;
-    font-weight: 500;
-  }
-  nav a.cta:hover { background: #e8e8e8; }
-
-  .hero {
-    margin-top: 7vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 0 20px;
-  }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    color: rgba(255,255,255,0.8);
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 999px;
-    padding: 5px 14px 5px 5px;
-    backdrop-filter: blur(8px);
-  }
-  .badge span {
-    background: #fff;
-    color: #000;
-    font-weight: 500;
-    border-radius: 999px;
-    padding: 3px 9px;
-    font-size: 11px;
-  }
-  h1 {
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-weight: 400;
-    font-size: clamp(42px, 7vw, 84px);
-    line-height: 1.08;
-    margin-top: 22px;
-    letter-spacing: 0.01em;
-  }
-  .sub {
-    margin-top: 18px;
-    max-width: 520px;
-    font-size: 13.5px;
-    font-weight: 300;
-    line-height: 1.65;
-    color: rgba(255,255,255,0.55);
-  }
-  .actions {
-    margin-top: 26px;
-    display: flex;
-    gap: 14px;
-    align-items: center;
-  }
-  .btn-primary {
-    background: #fff;
-    color: #000;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 12px 22px;
-    border-radius: 999px;
-    transition: transform .2s;
-  }
-  .btn-primary:hover { transform: scale(1.04); }
-  .btn-ghost {
-    color: #fff;
-    text-decoration: none;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .btn-ghost::after { content: '▸'; font-size: 11px; }
-
-  .stats {
-    position: fixed;
-    left: 50%;
-    top: 62%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 16px;
-    z-index: 10;
-    pointer-events: none;
-  }
-  .stat {
-    width: 200px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.12);
-    backdrop-filter: blur(14px);
-    border-radius: 18px;
-    padding: 18px 20px;
-  }
-  .stat .icon { font-size: 15px; opacity: .8; margin-bottom: 26px; }
-  .stat .value {
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-size: 30px;
-    font-weight: 400;
-  }
-  .stat .label {
-    margin-top: 6px;
-    font-size: 11px;
-    color: rgba(255,255,255,0.5);
-  }
-
-  footer {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    padding-bottom: 26px;
-    z-index: 10;
-    pointer-events: none;
-  }
-  footer .note {
-    font-size: 11px;
-    color: rgba(255,255,255,0.55);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 999px;
-    padding: 6px 16px;
-    backdrop-filter: blur(8px);
-  }
-  .partners {
-    display: flex;
-    gap: 56px;
-    font-family: 'Instrument Serif', serif;
-    font-style: italic;
-    font-size: 22px;
-    color: rgba(255,255,255,0.85);
-  }
-  @media (max-width: 720px) {
-    nav a:not(.cta) { display: none; }
-    .stats { flex-direction: column; top: auto; bottom: 120px; }
-    .stat { width: 170px; padding: 14px 16px; }
-    .partners { gap: 24px; font-size: 16px; flex-wrap: wrap; justify-content: center; padding: 0 16px; }
-  }
+  html, body { height: 100%; background: #000; overflow: hidden; }
+  #scene { position: fixed; inset: 0; display: block; }
 </style>
 </head>
 <body>
 <canvas id="scene"></canvas>
-
-<div class="ui">
-  <nav>
-    <div class="logo">d</div>
-    <a href="#">Home</a>
-    <a href="#">Voyages</a>
-    <a href="#">Worlds</a>
-    <a href="#">Innovation</a>
-    <a href="#">Plan Launch</a>
-    <a href="#" class="cta">Claim a Spot ↗</a>
-  </nav>
-
-  <div class="hero">
-    <div class="badge"><span>New</span> Maiden Crewed Voyage to Mars Arrives 2026</div>
-    <h1>Venture Past Our Sky<br>Across the Universe</h1>
-    <p class="sub">Discover the universe in ways once unimaginable. Our pioneering vessels and breakthrough engineering bring deep-space exploration within reach—secure and extraordinary.</p>
-    <div class="actions">
-      <a href="#" class="btn-primary">Start Your Voyage ↗</a>
-      <a href="#" class="btn-ghost">View Liftoff</a>
-    </div>
-  </div>
-</div>
-
-<div class="stats">
-  <div class="stat">
-    <div class="icon">▶</div>
-    <div class="value">34.5 Min</div>
-    <div class="label">Average Videos Watch Time</div>
-  </div>
-  <div class="stat">
-    <div class="icon">🌐</div>
-    <div class="value">2.8B+</div>
-    <div class="label">Users Across the Globe</div>
-  </div>
-</div>
-
-<footer>
-  <div class="note">Collaborating with top aerospace pioneers globally</div>
-  <div class="partners">
-    <span>Aeon</span><span>Vela</span><span>Apex</span><span>Orbit</span><span>Zeno</span>
-  </div>
-</footer>
 
 <script type="importmap">
 { "imports": {
@@ -266,36 +26,35 @@ const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+renderer.toneMappingExposure = 1.4;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
 
 const camera = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.1, 100);
-camera.position.set(0, 0.2, 7);
+camera.position.set(0, 0, 7);
 
-// --- Environment: procedural gradient (orange/blue/violet) for the iridescent glass look ---
+// --- Environment: brand palette gradient  #FF9E64 / #D6549F / #6E3FD1 ---
 const envCanvas = document.createElement('canvas');
 envCanvas.width = 512; envCanvas.height = 256;
 const ectx = envCanvas.getContext('2d');
 const grad = ectx.createLinearGradient(0, 0, 512, 256);
-grad.addColorStop(0.0, '#120b3a');
-grad.addColorStop(0.2, '#2a4db8');
-grad.addColorStop(0.38, '#e04fb0');
-grad.addColorStop(0.52, '#f5a623');
-grad.addColorStop(0.66, '#ff5e2a');
-grad.addColorStop(0.8, '#8a3fd1');
-grad.addColorStop(1.0, '#0a1a4f');
+grad.addColorStop(0.0, '#170b2e');
+grad.addColorStop(0.22, '#6E3FD1');
+grad.addColorStop(0.45, '#D6549F');
+grad.addColorStop(0.62, '#FF9E64');
+grad.addColorStop(0.8, '#6E3FD1');
+grad.addColorStop(1.0, '#0d0620');
 ectx.fillStyle = grad;
 ectx.fillRect(0, 0, 512, 256);
 // bright hotspots so glass gets specular streaks
 for (const [x, y, r, c] of [
-  [380, 90, 90, 'rgba(255,200,120,0.95)'],
-  [140, 160, 70, 'rgba(120,160,255,0.9)'],
+  [380, 90, 90, 'rgba(255,158,100,0.95)'],
+  [140, 160, 70, 'rgba(110,63,209,0.9)'],
   [260, 60, 50, 'rgba(255,255,255,0.85)'],
-  [60, 70, 55, 'rgba(255,90,200,0.85)'],
-  [460, 180, 60, 'rgba(90,255,220,0.7)'],
-  [320, 200, 45, 'rgba(255,240,180,0.8)']
+  [60, 70, 55, 'rgba(214,84,159,0.9)'],
+  [460, 180, 60, 'rgba(255,158,100,0.7)'],
+  [320, 200, 45, 'rgba(214,84,159,0.8)']
 ]) {
   const g = ectx.createRadialGradient(x, y, 0, x, y, r);
   g.addColorStop(0, c); g.addColorStop(1, 'rgba(0,0,0,0)');
@@ -307,31 +66,60 @@ envTex.mapping = THREE.EquirectangularReflectionMapping;
 envTex.colorSpace = THREE.SRGBColorSpace;
 scene.environment = envTex;
 
-// --- 3D logo: chevron "A" mark (Avenor), extruded beveled glass ---
-const chevron = new THREE.Shape([
-  new THREE.Vector2(-1.05, -0.75),
+// --- 3D logo: Avenor mark — right stroke with apex, cut left stroke, small accent ---
+// right stroke including the apex; its lower-left edge is the cut line
+const rightStroke = new THREE.Shape([
+  new THREE.Vector2(-0.205, 0.78),
   new THREE.Vector2(0, 1.15),
   new THREE.Vector2(1.05, -0.75),
   new THREE.Vector2(0.5, -0.75),
-  new THREE.Vector2(0, 0.28),
+  new THREE.Vector2(0, 0.24)
+]);
+// left stroke, terminated by the diagonal cut below the apex
+const leftStroke = new THREE.Shape([
+  new THREE.Vector2(-1.05, -0.75),
+  new THREE.Vector2(-0.30, 0.60),
+  new THREE.Vector2(-0.10, 0.05),
   new THREE.Vector2(-0.5, -0.75)
 ]);
 // small inner accent triangle at the base
 const accent = new THREE.Shape([
-  new THREE.Vector2(0, -0.12),
-  new THREE.Vector2(0.3, -0.72),
-  new THREE.Vector2(-0.3, -0.72)
+  new THREE.Vector2(0, -0.35),
+  new THREE.Vector2(0.16, -0.72),
+  new THREE.Vector2(-0.16, -0.72)
 ]);
-const geo = new THREE.ExtrudeGeometry([chevron, accent], {
+const geo = new THREE.ExtrudeGeometry([rightStroke, leftStroke, accent], {
   depth: 0.45,
   bevelEnabled: true,
-  bevelThickness: 0.22,
-  bevelSize: 0.16,
-  bevelSegments: 12
+  bevelThickness: 0.12,
+  bevelSize: 0.05,
+  bevelSegments: 8
 });
 geo.center();
 
+// procedural noise: watery bump + varying iridescence film thickness -> gradient swirls
+const bumpCanvas = document.createElement('canvas');
+bumpCanvas.width = bumpCanvas.height = 256;
+const bctx = bumpCanvas.getContext('2d');
+bctx.fillStyle = '#404040';
+bctx.fillRect(0, 0, 256, 256);
+bctx.filter = 'blur(28px)';
+for (let i = 0; i < 5; i++) {
+  const x = Math.random() * 256, y = Math.random() * 256, r = 100 + Math.random() * 120;
+  const g = bctx.createRadialGradient(x, y, 0, x, y, r);
+  const vv = Math.floor(Math.random() * 255);
+  g.addColorStop(0, `rgba(${vv},${vv},${vv},0.55)`);
+  g.addColorStop(1, 'rgba(64,64,64,0)');
+  bctx.fillStyle = g;
+  bctx.fillRect(0, 0, 256, 256);
+}
+const bumpTex = new THREE.CanvasTexture(bumpCanvas);
+bumpTex.wrapS = bumpTex.wrapT = THREE.RepeatWrapping;
+
 const mat = new THREE.MeshPhysicalMaterial({
+  bumpMap: bumpTex,
+  bumpScale: 0.5,
+  iridescenceThicknessMap: bumpTex,
   transmission: 1,
   thickness: 0.5,
   roughness: 0.03,
@@ -342,32 +130,32 @@ const mat = new THREE.MeshPhysicalMaterial({
   iridescenceThicknessRange: [150, 1200],
   clearcoat: 1,
   clearcoatRoughness: 0.04,
-  envMapIntensity: 3.2,
-  attenuationColor: new THREE.Color(0xffe0c0),
+  envMapIntensity: 4,
+  attenuationColor: new THREE.Color(0xffb0c0),
   attenuationDistance: 3.5,
   color: 0xffffff
 });
 const logo = new THREE.Mesh(geo, mat);
 logo.scale.setScalar(1.15);
-logo.position.y = -0.9;
 logo.rotation.x = -0.12;
 logo.rotation.y = 0.35;
 scene.add(logo);
+window.__logo = logo;
 
-// multi-colored rim lights for glints from different sides
+// brand-colored rim lights for glints from different sides
 const lights = [
-  [0xff8c2a, 70, [3, -1, 2]],     // warm orange, right
-  [0x3a6cff, 50, [-3, 1, 2]],     // deep blue, left
-  [0xff4fd8, 45, [-2, -2.5, 3]],  // magenta, lower-left front
-  [0x4fffd0, 30, [2.5, 2, -2]],   // teal, upper-right back
-  [0xfff0b0, 35, [0, 3, 3]]       // warm white, top front
+  [0xFF9E64, 70, [3, -1, 2]],
+  [0x6E3FD1, 55, [-3, 1, 2]],
+  [0xD6549F, 50, [-2, -2.5, 3]],
+  [0xFF9E64, 30, [2.5, 2, -2]],
+  [0xfff0e0, 35, [0, 3, 3]]
 ];
 for (const [c, i, p] of lights) {
   const l = new THREE.PointLight(c, i);
   l.position.set(...p);
   scene.add(l);
 }
-scene.add(new THREE.AmbientLight(0x111122, 2));
+scene.add(new THREE.AmbientLight(0x140a22, 2));
 
 // --- Stars ---
 const starGeo = new THREE.BufferGeometry();
@@ -385,7 +173,7 @@ starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
 const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.7 }));
 scene.add(stars);
 
-// --- Interaction: drag to rotate the droplet ---
+// --- Interaction: drag to rotate the logo ---
 let dragging = false, px = 0, py = 0;
 let velX = 0, velY = 0;
 canvas.addEventListener('pointerdown', e => { dragging = true; px = e.clientX; py = e.clientY; });
@@ -408,10 +196,10 @@ resize();
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const t = clock.getElapsedTime();
-  logo.rotation.y += velY + 0.004;
+  logo.rotation.y += velY + 0.0015;
   logo.rotation.x += velX;
   velX *= 0.95; velY *= 0.95;
-  logo.position.y = -0.9 + Math.sin(t * 0.6) * 0.06; // gentle float
+  logo.position.y = Math.sin(t * 0.6) * 0.06; // gentle float, centered
   stars.rotation.y = t * 0.005;
   renderer.render(scene, camera);
 });
