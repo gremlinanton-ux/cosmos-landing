@@ -307,29 +307,29 @@ envTex.mapping = THREE.EquirectangularReflectionMapping;
 envTex.colorSpace = THREE.SRGBColorSpace;
 scene.environment = envTex;
 
-// --- Droplet: sphere deformed into a teardrop, real interactive 3D mesh ---
-const geo = new THREE.SphereGeometry(1.6, 160, 160);
-const pos = geo.attributes.position;
-const v = new THREE.Vector3();
-const dir = new THREE.Vector3();
-// layered trig pseudo-noise for organic lumps and dents
-const noise = (x, y, z) =>
-  Math.sin(x * 1.8 + y * 1.1) * Math.cos(z * 1.5 + x * 0.7) * 0.55 +
-  Math.sin(y * 2.9 + z * 2.1 + 1.3) * 0.28 +
-  Math.cos(x * 4.2 + z * 3.6 + y * 2.4) * 0.17;
-for (let i = 0; i < pos.count; i++) {
-  v.fromBufferAttribute(pos, i);
-  dir.copy(v).normalize();
-  // chaotic bumps and dents along the surface normal
-  v.addScaledVector(dir, noise(v.x, v.y, v.z) * 0.34);
-  const t = (v.y / 1.6 + 1) / 2;          // 0 bottom .. 1 top
-  const squeeze = 1 - 0.4 * Math.pow(t, 2.2);   // narrow toward the top
-  v.x *= squeeze;
-  v.z *= squeeze;
-  v.y *= 1.12 + 0.22 * Math.pow(t, 3);    // stretch the tip upward
-  pos.setXYZ(i, v.x, v.y, v.z);
-}
-geo.computeVertexNormals();
+// --- 3D logo: chevron "A" mark (Avenor), extruded beveled glass ---
+const chevron = new THREE.Shape([
+  new THREE.Vector2(-1.05, -0.75),
+  new THREE.Vector2(0, 1.15),
+  new THREE.Vector2(1.05, -0.75),
+  new THREE.Vector2(0.5, -0.75),
+  new THREE.Vector2(0, 0.28),
+  new THREE.Vector2(-0.5, -0.75)
+]);
+// small inner accent triangle at the base
+const accent = new THREE.Shape([
+  new THREE.Vector2(0, -0.12),
+  new THREE.Vector2(0.3, -0.72),
+  new THREE.Vector2(-0.3, -0.72)
+]);
+const geo = new THREE.ExtrudeGeometry([chevron, accent], {
+  depth: 0.45,
+  bevelEnabled: true,
+  bevelThickness: 0.22,
+  bevelSize: 0.16,
+  bevelSegments: 12
+});
+geo.center();
 
 const mat = new THREE.MeshPhysicalMaterial({
   transmission: 1,
@@ -342,14 +342,17 @@ const mat = new THREE.MeshPhysicalMaterial({
   iridescenceThicknessRange: [150, 1200],
   clearcoat: 1,
   clearcoatRoughness: 0.04,
-  envMapIntensity: 2.2,
+  envMapIntensity: 3.2,
   attenuationColor: new THREE.Color(0xffe0c0),
   attenuationDistance: 3.5,
   color: 0xffffff
 });
-const droplet = new THREE.Mesh(geo, mat);
-droplet.position.y = -0.9;
-scene.add(droplet);
+const logo = new THREE.Mesh(geo, mat);
+logo.scale.setScalar(1.15);
+logo.position.y = -0.9;
+logo.rotation.x = -0.12;
+logo.rotation.y = 0.35;
+scene.add(logo);
 
 // multi-colored rim lights for glints from different sides
 const lights = [
@@ -405,10 +408,10 @@ resize();
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const t = clock.getElapsedTime();
-  droplet.rotation.y += velY + 0.0015;
-  droplet.rotation.x += velX;
+  logo.rotation.y += velY + 0.004;
+  logo.rotation.x += velX;
   velX *= 0.95; velY *= 0.95;
-  droplet.position.y = -0.9 + Math.sin(t * 0.6) * 0.06; // gentle float
+  logo.position.y = -0.9 + Math.sin(t * 0.6) * 0.06; // gentle float
   stars.rotation.y = t * 0.005;
   renderer.render(scene, camera);
 });
