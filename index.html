@@ -370,24 +370,56 @@
 
   /* ---------- 2. Timeline ---------- */
   .timeline { position: relative; }
+  /* rail runs at card mid-height, drawn over the cards so it reads as one wire */
   .rail {
     position: absolute;
-    top: 45px; left: 8%; right: 8%;
+    top: 50%; left: 0; right: 0;
     height: 1px;
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
     overflow: hidden;
+    z-index: 3;
+    pointer-events: none;
   }
   .rail::after {
     content: '';
     position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.85), transparent);
+    background: linear-gradient(90deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.9) 50%,
+      transparent 60%);
     transform: translateX(-100%);
   }
-  .timeline.in .rail::after { animation: rail 3.4s ease-in-out 500ms infinite; }
+  /* linear is required: the card flashes below are timed off a constant pulse speed */
+  .timeline.in .rail::after { animation: rail 4.2s linear infinite; }
   @keyframes rail {
     0%   { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
   }
+
+  /* each card lights up as the pulse crosses it.
+     glow lives on ::before so it never clobbers the card's own hover box-shadow */
+  .step::before {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at center,
+      rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0) 70%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .timeline.in .step::before { animation: stepFlash 4.2s ease-in-out infinite; }
+  @keyframes stepFlash {
+    0%, 100% { opacity: 0; }
+    4%       { opacity: 1; }
+    16%      { opacity: 0; }
+  }
+  /* pulse centre reaches card i at (p+0.5)/2 of the cycle; peak sits 168ms in */
+  .timeline.in .step:nth-child(1)::before { animation-delay: 1092ms; }
+  .timeline.in .step:nth-child(2)::before { animation-delay: 1512ms; }
+  .timeline.in .step:nth-child(3)::before { animation-delay: 1932ms; }
+  .timeline.in .step:nth-child(4)::before { animation-delay: 2352ms; }
+  .timeline.in .step:nth-child(5)::before { animation-delay: 2772ms; }
   .steps {
     position: relative;
     display: grid;
@@ -594,7 +626,9 @@
 
   @media (max-width: 1000px) {
     .steps { grid-template-columns: repeat(2, 1fr); }
+    /* grid reflows to 2 columns — the pulse timing no longer maps to card positions */
     .rail { display: none; }
+    .timeline.in .step::before { animation: none; }
     .grid-3, .widgets { grid-template-columns: repeat(2, 1fr); }
     .grid-4 { grid-template-columns: repeat(3, 1fr); }
     .foot-in { grid-template-columns: 1fr 1fr; }
