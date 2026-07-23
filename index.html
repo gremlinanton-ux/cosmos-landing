@@ -150,8 +150,8 @@
     width: min(720px, 100%);
     border-radius: 999px;
     display: flex; align-items: center;
-    padding: 0 10px 0 26px;
-    gap: 16px;
+    padding: 0 10px 0 18px; /* 34px button keeps the icon optically where the 19px glyph sat */
+    gap: 12px;
     overflow: hidden;
   }
   .search::after {
@@ -182,7 +182,30 @@
       0 16px 48px rgba(0, 0, 0, 0.5),
       0 0 40px rgba(255, 255, 255, 0.07);
   }
-  .search svg.link { width: 19px; height: 19px; flex-shrink: 0; opacity: 0.5; }
+  /* leading button: paste from clipboard, turns into a clear cross once filled */
+  .lead {
+    position: relative;
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    border: none; background: none;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    transition: background 280ms ease-out;
+  }
+  .lead:hover { background: rgba(255, 255, 255, 0.08); }
+  .lead svg {
+    position: absolute;
+    width: 19px; height: 19px;
+    transition: opacity 300ms ease-out, filter 300ms ease-out;
+  }
+  .lead .i-link  { opacity: 0.5; }
+  .lead .i-clear { opacity: 0; filter: blur(4px); }
+  .lead:hover .i-link { opacity: 0.9; }
+  .search.filled .lead .i-link  { opacity: 0; filter: blur(4px); }
+  .search.filled .lead .i-clear { opacity: 0.55; filter: blur(0); }
+  .search.filled .lead:hover .i-clear { opacity: 0.95; }
   .search input {
     flex: 1;
     background: none; border: none; outline: none;
@@ -579,7 +602,7 @@
   @media (max-width: 860px) {
     .nav-links { display: none; }
     nav { grid-template-columns: 1fr auto; width: calc(100% - 32px); }
-    .search { height: 64px; padding-left: 20px; }
+    .search { height: 64px; padding-left: 12px; }
     .analyze { height: 48px; padding: 0 20px; }
     .analyze .label { display: none; }
     section { padding: 11vh 22px; }
@@ -628,10 +651,15 @@
     </p>
 
     <form class="search glass-strong" id="search" autocomplete="off">
-      <svg class="link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-        <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" />
-        <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
-      </svg>
+      <button class="lead" id="lead" type="button" aria-label="Paste property listing URL from clipboard">
+        <svg class="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" />
+          <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" />
+        </svg>
+        <svg class="i-clear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
       <input id="url" type="text" placeholder="Paste property listing URL..." spellcheck="false">
       <button class="analyze" type="submit">
         <span class="label">Analyze</span>
@@ -773,7 +801,26 @@
     timer = setTimeout(reveal, 480);
   };
 
+  const lead = document.getElementById('lead');
+
+  // one click does both jobs: paste when empty, clear when not
+  lead.addEventListener('click', async () => {
+    if (input.value) {
+      input.value = '';
+    } else {
+      try {
+        input.value = (await navigator.clipboard.readText()).trim();
+      } catch {
+        // clipboard blocked or denied — fall through and let the user paste manually
+      }
+    }
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.focus();
+  });
+
   input.addEventListener('input', () => {
+    // any single character flips the button to its clear state
+    form.classList.toggle('filled', !!input.value);
     if (input.value.trim()) {
       if (!row.classList.contains('hidden')) {
         stagger(45);
