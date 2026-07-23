@@ -228,10 +228,26 @@
     font-size: 12px; font-weight: 300;
     letter-spacing: 0.01em;
     color: rgba(255, 255, 255, 0.6);
-    transition: color 300ms ease-out, opacity 400ms ease-out, filter 400ms ease-out;
+    transition: color 300ms ease-out;
   }
   .chip:hover { color: rgba(255, 255, 255, 0.9); }
-  .row.hidden .chip { opacity: 0; filter: blur(6px); pointer-events: none; }
+
+  /* static chips — staggered blur-in on load, staggered blur-out while typing.
+     child combinator so these rules never touch the status chips inside .status */
+  .row > .chip {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(8px);
+    transition: opacity 520ms ease-out, filter 520ms ease-out,
+                transform 520ms ease-out, color 300ms ease-out;
+  }
+  .row.ready > .chip { opacity: 1; filter: blur(0); transform: none; }
+  .row.hidden > .chip {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(-7px);
+    pointer-events: none;
+  }
 
   .status {
     position: absolute; top: 0;
@@ -732,24 +748,36 @@
 
   status.innerHTML = STEPS.map(s => `<div class="chip glass">${CHECK}${s}</div>`).join('');
   const items = [...status.children];
+  const chips = [...row.children].filter(el => el.classList.contains('chip'));
   let timer = null, shown = 0;
+
+  // stagger each static chip; entering is slower and airier than leaving
+  const stagger = step => chips.forEach((c, i) => c.style.transitionDelay = i * step + 'ms');
+
+  stagger(70);
+  // double rAF: the first frame must actually paint the hidden state,
+  // otherwise the browser resolves straight to the end value and nothing animates
+  requestAnimationFrame(() => requestAnimationFrame(() => row.classList.add('ready')));
 
   const reveal = () => {
     if (shown >= items.length) return;
     items[shown++].classList.add('on');
-    timer = setTimeout(reveal, 520);
+    timer = setTimeout(reveal, 480);
   };
 
   input.addEventListener('input', () => {
     if (input.value.trim()) {
       if (!row.classList.contains('hidden')) {
+        stagger(45);
         row.classList.add('hidden');
-        timer = setTimeout(reveal, 260);
+        // let the chips get most of the way out before the first status lands
+        timer = setTimeout(reveal, 400);
       }
     } else {
       clearTimeout(timer);
       shown = 0;
       items.forEach(i => i.classList.remove('on'));
+      stagger(70);
       row.classList.remove('hidden');
     }
   });
