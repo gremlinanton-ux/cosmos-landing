@@ -9,7 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; background: #000; overflow: hidden; }
+  html { height: 100%; }
+  body { min-height: 100%; background: #000; overflow-x: hidden; }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: #fff;
@@ -49,17 +50,22 @@
 
   /* ---------- Overlay ---------- */
   .ui {
-    position: fixed; inset: 0;
+    position: relative;
+    min-height: 100vh;
+    padding-top: 84px; /* keeps hero content exactly where the fixed nav used to hold it */
     display: flex; flex-direction: column; align-items: center;
     pointer-events: none;
-    z-index: 10;
+    z-index: 5;
   }
   /* only real controls capture the pointer — empty space stays draggable for the 3D logo */
   nav, .badge, .search, .chip, .ui a, .ui button, .ui input { pointer-events: auto; }
 
   /* ---------- Navigation ---------- */
-  nav {
-    margin-top: 24px;
+  nav.glass {
+    position: fixed;
+    top: 24px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
     height: 60px;
     width: min(880px, calc(100% - 48px));
     border-radius: 999px;
@@ -239,12 +245,322 @@
   .status .chip.on { opacity: 1; filter: blur(0); transform: translateY(0); }
   .status .check { width: 12px; height: 12px; flex-shrink: 0; opacity: 0.85; }
 
+  /* ---------- Sections ---------- */
+  main { position: relative; z-index: 5; }
+  section {
+    padding: 15vh 32px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .sec-head { text-align: center; margin-bottom: 8vh; }
+  .sec-head h2 {
+    font-size: clamp(2rem, 4.2vw, 3.35rem);
+    font-weight: 200;
+    line-height: 1.12;
+    letter-spacing: -0.032em;
+  }
+  .sec-head h2 .accent { font-weight: 400; }
+  .eyebrow {
+    display: inline-block;
+    font-size: 11.5px; font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.34);
+    margin-bottom: 22px;
+  }
+
+  /* reveal on scroll */
+  .reveal {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(26px);
+    transition: opacity 900ms ease-out, filter 900ms ease-out, transform 900ms ease-out;
+  }
+  .reveal.in { opacity: 1; filter: blur(0); transform: none; }
+
+  /* shared card sheen on hover */
+  .card {
+    border-radius: 22px;
+    overflow: hidden;
+    transition: transform 380ms ease-out, border-color 380ms ease-out,
+                background 380ms ease-out, box-shadow 380ms ease-out;
+  }
+  .card::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,0.06) 46%,
+      rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 54%, transparent 65%);
+    transform: translateX(-120%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .card:hover::after { animation: sweep 1500ms ease-out; }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.24);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 20px 60px rgba(0, 0, 0, 0.55),
+      0 0 46px rgba(255, 255, 255, 0.05);
+  }
+  .card h3 {
+    font-size: 17px; font-weight: 400;
+    letter-spacing: -0.012em;
+  }
+  .icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+  .icon svg { width: 19px; height: 19px; opacity: 0.82; }
+
+  /* ---------- 2. Timeline ---------- */
+  .timeline { position: relative; }
+  .rail {
+    position: absolute;
+    top: 45px; left: 8%; right: 8%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+  }
+  .rail::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.85), transparent);
+    transform: translateX(-100%);
+  }
+  .timeline.in .rail::after { animation: rail 3.4s ease-in-out 500ms infinite; }
+  @keyframes rail {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .steps {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+  }
+  .step {
+    padding: 26px 20px 28px;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+    gap: 18px;
+  }
+  .step .icon { width: 46px; height: 46px; border-radius: 14px; }
+  .step .n {
+    font-size: 11px; font-weight: 300;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.32);
+  }
+  .step h3 { font-size: 14.5px; line-height: 1.35; }
+
+  /* ---------- 3. Analyze grid ---------- */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .cat { padding: 30px 28px 32px; }
+  .cat .icon { margin-bottom: 22px; }
+  .cat ul { list-style: none; margin-top: 20px; }
+  .cat li {
+    font-size: 13.5px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.48);
+    padding: 7px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.055);
+  }
+  .cat li:first-child { border-top: none; padding-top: 0; }
+
+  /* ---------- 4. Why ---------- */
+  .why { padding: 44px 36px 48px; min-height: 300px; display: flex; flex-direction: column; }
+  .why .icon { width: 46px; height: 46px; border-radius: 14px; margin-bottom: auto; }
+  .why h3 { font-size: 22px; font-weight: 300; margin-top: 34px; letter-spacing: -0.02em; }
+  .why p {
+    margin-top: 14px;
+    font-size: 14px; font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.46);
+  }
+
+  /* ---------- 5. Report widgets ---------- */
+  .widgets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    align-items: start;
+  }
+  .float { will-change: transform; }
+  .widget {
+    padding: 26px 26px 28px;
+    border-radius: 20px;
+    animation: bob 9s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-9px); }
+  }
+  .widget .label {
+    font-size: 11.5px; font-weight: 300;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.36);
+  }
+  .widget .value {
+    margin-top: 16px;
+    font-size: 34px; font-weight: 200;
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+  .widget .value small {
+    font-size: 15px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.34);
+    letter-spacing: -0.01em;
+  }
+  .widget .bar {
+    margin-top: 20px; height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px; overflow: hidden;
+  }
+  .widget .bar i { display: block; height: 100%; background: rgba(255, 255, 255, 0.7); border-radius: 2px; }
+  .years { margin-top: 18px; display: flex; flex-direction: column; gap: 2px; }
+  .years div {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 15px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .years div::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55); flex-shrink: 0;
+  }
+  .years span { width: 1px; height: 14px; margin-left: 2px; background: rgba(255, 255, 255, 0.16); }
+
+  /* ---------- 6. Sources ---------- */
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .source {
+    padding: 28px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    text-align: center;
+    border-radius: 18px;
+  }
+  .source span {
+    font-size: 12.5px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.52);
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- 7. FAQ ---------- */
+  .faq { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  .qa { border-radius: 18px; overflow: hidden; }
+  .qa button {
+    width: 100%;
+    background: none; border: none;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    padding: 24px 28px;
+    text-align: left;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 15px; font-weight: 300;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+  }
+  .qa .plus {
+    position: relative;
+    width: 13px; height: 13px; flex-shrink: 0;
+    transition: transform 340ms ease-out;
+  }
+  .qa .plus::before, .qa .plus::after {
+    content: ''; position: absolute; background: rgba(255, 255, 255, 0.5);
+    left: 50%; top: 50%;
+  }
+  .qa .plus::before { width: 13px; height: 1px; transform: translate(-50%, -50%); }
+  .qa .plus::after  { width: 1px; height: 13px; transform: translate(-50%, -50%); }
+  .qa.open .plus { transform: rotate(45deg); }
+  .qa .a {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 380ms ease-out;
+  }
+  .qa.open .a { grid-template-rows: 1fr; }
+  .qa .a > div { overflow: hidden; }
+  .qa .a p {
+    padding: 0 28px 26px;
+    font-size: 14px; font-weight: 300;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.46);
+    max-width: 62ch;
+  }
+
+  /* ---------- 8. Footer ---------- */
+  footer {
+    position: relative; z-index: 5;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.012);
+    margin-top: 8vh;
+  }
+  .foot-in {
+    max-width: 1180px; margin: 0 auto;
+    padding: 9vh 32px 0;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 48px;
+  }
+  .foot-in .brand svg { width: 16px; height: 16px; }
+  .foot-in .brand span { font-size: 12.5px; }
+  .foot-desc {
+    margin-top: 20px;
+    font-size: 13.5px; font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.38);
+    max-width: 30ch;
+  }
+  .foot-col h4 {
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.34);
+    margin-bottom: 18px;
+  }
+  .foot-col a {
+    display: block;
+    font-size: 13.5px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    padding: 6px 0;
+    transition: color 280ms ease-out;
+  }
+  .foot-col a:hover { color: #fff; }
+  .foot-bottom {
+    max-width: 1180px; margin: 0 auto;
+    padding: 6vh 32px 5vh;
+    font-size: 12px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.28);
+  }
+
+  @media (max-width: 1000px) {
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .rail { display: none; }
+    .grid-3, .widgets { grid-template-columns: repeat(2, 1fr); }
+    .grid-4 { grid-template-columns: repeat(3, 1fr); }
+    .foot-in { grid-template-columns: 1fr 1fr; }
+  }
   @media (max-width: 860px) {
     .nav-links { display: none; }
-    nav { grid-template-columns: 1fr auto; }
+    nav { grid-template-columns: 1fr auto; width: calc(100% - 32px); }
     .search { height: 64px; padding-left: 20px; }
     .analyze { height: 48px; padding: 0 20px; }
     .analyze .label { display: none; }
+    section { padding: 11vh 22px; }
+  }
+  @media (max-width: 640px) {
+    .steps, .grid-3, .widgets { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .foot-in { grid-template-columns: 1fr; gap: 36px; }
   }
 </style>
 </head>
@@ -309,6 +625,90 @@
   </div>
 </div>
 
+<main>
+  <!-- 2. How it works -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="eyebrow">How AVENOR works</span>
+      <h2>How AI Investigates<br><span class="accent">Every Property</span></h2>
+    </div>
+    <div class="timeline reveal" id="timeline">
+      <div class="rail"></div>
+      <div class="steps" id="steps"></div>
+    </div>
+  </section>
+
+  <!-- 3. Everything we analyze -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="eyebrow">Everything we analyze</span>
+      <h2>Everything You Need.<br><span class="accent">Nothing Hidden.</span></h2>
+    </div>
+    <div class="grid-3" id="cats"></div>
+  </section>
+
+  <!-- 4. Why AVENOR -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="eyebrow">Why AVENOR</span>
+      <h2>Built for Smarter<br><span class="accent">Property Decisions</span></h2>
+    </div>
+    <div class="grid-3" id="why"></div>
+  </section>
+
+  <!-- 5. Report preview -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="eyebrow">Report preview</span>
+      <h2>Professional Report.<br><span class="accent">Generated in Seconds.</span></h2>
+    </div>
+    <div class="widgets" id="widgets"></div>
+  </section>
+
+  <!-- 6. Data sources -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="eyebrow">Trusted data sources</span>
+      <h2>Powered by <span class="accent">Trusted Data</span></h2>
+    </div>
+    <div class="grid-4" id="sources"></div>
+  </section>
+
+  <!-- 7. FAQ -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="eyebrow">FAQ</span>
+      <h2>Frequently Asked <span class="accent">Questions</span></h2>
+    </div>
+    <div class="faq" id="faq"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <div class="reveal">
+      <div class="brand">
+        <svg viewBox="-12 -12 24 24" fill="#fff" aria-hidden="true">
+          <path d="M-2.05,-7.8 L0,-11.5 L10.5,7.5 L5,7.5 L0,-2.4 Z" />
+          <path d="M-10.5,7.5 L-3.6,-5.0 L-1.6,0.2 L-5,7.5 Z" />
+          <path d="M0,3.5 L1.6,7.2 L-1.6,7.2 Z" />
+        </svg>
+        <span>AVENOR</span>
+      </div>
+      <p class="foot-desc">Professional AI property intelligence platform.</p>
+    </div>
+    <div class="foot-col reveal">
+      <h4>Navigation</h4>
+      <a href="#">Solutions</a><a href="#">Pricing</a><a href="#">API</a><a href="#">Blog</a>
+    </div>
+    <div class="foot-col reveal">
+      <h4>Legal</h4>
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a>
+    </div>
+  </div>
+  <div class="foot-bottom reveal">© 2026 AVENOR</div>
+</footer>
+
 <script>
 (() => {
   const STEPS = [
@@ -356,6 +756,154 @@
   };
   form.addEventListener('submit', analyze);
   input.addEventListener('keydown', e => { if (e.key === 'Enter') analyze(e); });
+})();
+</script>
+
+<script>
+(() => {
+  const svg = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const I = {
+    link:     '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+    doc:      '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/>',
+    chart:    '<path d="M4 19h16"/><path d="M6 16l4-5 3 3 5-7"/>',
+    shield:   '<path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/><path d="M12 9v4M12 15.5h.01"/>',
+    report:   '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 16l1-2.2 2.2-1-2.2-1L9 9.6l-1 2.2-2.2 1 2.2 1z"/>',
+    pin:      '<path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+    coins:    '<ellipse cx="12" cy="6.5" rx="7" ry="3"/><path d="M5 6.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/><path d="M5 11.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>',
+    home:     '<path d="M4 10.5L12 4l8 6.5"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>',
+    cpu:      '<rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3v3M14 3v3M10 18v3M14 18v3M3 10h3M3 14h3M18 10h3M18 14h3"/>',
+    verified: '<path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>',
+    target:   '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/>',
+    bank:     '<path d="M12 3l9 5H3z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/><path d="M3 21h18"/>',
+    book:     '<path d="M4 5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2z"/><path d="M8 3v18"/>',
+    bus:      '<rect x="5" y="4" width="14" height="12" rx="2"/><path d="M5 10h14"/><circle cx="8.5" cy="19" r="1.2"/><circle cx="15.5" cy="19" r="1.2"/>',
+    cap:      '<path d="M3 9l9-4 9 4-9 4z"/><path d="M7 11v4c0 1.7 2.2 3 5 3s5-1.3 5-3v-4"/>',
+    globe:    '<circle cx="12" cy="12" r="8"/><path d="M4 12h16"/><path d="M12 4c2.5 2.2 2.5 13.8 0 16-2.5-2.2-2.5-13.8 0-16z"/>',
+    bolt:     '<path d="M13 3L5 14h6l-1 7 8-11h-6z"/>',
+    layers:   '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>'
+  };
+
+  const fill = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+
+  /* 2 — Timeline */
+  fill('steps', [
+    ['Paste Property URL', I.link],
+    ['Collect Official Records', I.doc],
+    ['Analyze Market & Neighborhood', I.chart],
+    ['Detect Risks', I.shield],
+    ['Generate AI Report', I.report]
+  ].map(([t, ic], i) =>
+    `<div class="step card glass"><div class="icon">${svg(ic)}</div>
+      <div><div class="n">STEP ${i + 1}</div><h3>${t}</h3></div></div>`
+  ).join(''));
+
+  /* 3 — Everything we analyze */
+  fill('cats', [
+    ['Official Records', I.doc,   ['Ownership History', 'Mortgages', 'Permits', 'Restrictions']],
+    ['Neighborhood',     I.pin,   ['Crime', 'Schools', 'Transport', 'Healthcare', 'Noise']],
+    ['Market',           I.chart, ['Price History', 'Comparable Sales', 'Market Trends', 'Demand', 'Forecast']],
+    ['Investment',       I.coins, ['Rental Yield', 'ROI', 'Cash Flow', 'Investment Score']],
+    ['Property',         I.home,  ['Construction', 'Energy Rating', 'Technical Condition', 'Renovation History']],
+    ['AI Verdict',       I.cpu,   ['Overall Score', 'Strengths', 'Weaknesses', 'Recommendation']]
+  ].map(([t, ic, items]) =>
+    `<div class="cat card glass"><div class="icon">${svg(ic)}</div><h3>${t}</h3>
+      <ul>${items.map(x => `<li>${x}</li>`).join('')}</ul></div>`
+  ).join(''));
+
+  /* 4 — Why AVENOR */
+  fill('why', [
+    ['Official Data', I.verified, 'Built from trusted public records and verified datasets.'],
+    ['AI Intelligence', I.cpu, 'Thousands of signals transformed into one professional report.'],
+    ['Decision Confidence', I.target, 'Understand risks before making expensive decisions.']
+  ].map(([t, ic, p]) =>
+    `<div class="why card glass"><div class="icon">${svg(ic)}</div><h3>${t}</h3><p>${p}</p></div>`
+  ).join(''));
+
+  /* 5 — Report widgets */
+  const widget = (inner, speed, delay) =>
+    `<div class="float" data-speed="${speed}">
+       <div class="widget card glass" style="animation-delay:${delay}s">${inner}</div>
+     </div>`;
+  fill('widgets', [
+    widget('<div class="label">Risk Score</div><div class="value">87 <small>/ 100</small></div>' +
+           '<div class="bar"><i style="width:87%"></i></div>', 0.055, 0),
+    widget('<div class="label">Property Value</div><div class="value">€423,000</div>' +
+           '<div class="bar"><i style="width:64%"></i></div>', 0.10, 1.4),
+    widget('<div class="label">Neighborhood</div><div class="value">Excellent</div>' +
+           '<div class="bar"><i style="width:92%"></i></div>', 0.03, 2.6),
+    widget('<div class="label">Investment Rating</div><div class="value">Strong Buy</div>' +
+           '<div class="bar"><i style="width:78%"></i></div>', 0.09, 0.7),
+    widget('<div class="label">Ownership Timeline</div>' +
+           '<div class="years"><div>2011</div><span></span><div>2018</div><span></span><div>2025</div></div>', 0.045, 3.3),
+    widget('<div class="label">Data Points Analyzed</div><div class="value">2,481</div>' +
+           '<div class="bar"><i style="width:100%"></i></div>', 0.075, 2.0)
+  ].join(''));
+
+  /* 6 — Sources */
+  fill('sources', [
+    ['Official Records', I.doc], ['Government Data', I.bank],
+    ['Land Registry', I.book], ['Market Intelligence', I.layers],
+    ['Transport', I.bus], ['Schools', I.cap],
+    ['Satellite Maps', I.globe], ['Energy Certificates', I.bolt]
+  ].map(([t, ic]) =>
+    `<div class="source card glass"><div class="icon">${svg(ic)}</div><span>${t}</span></div>`
+  ).join(''));
+
+  /* 7 — FAQ */
+  fill('faq', [
+    ['What do I need to get started?',
+     'A listing URL is enough. AVENOR resolves the address, matches it against official registries and begins the analysis automatically — no forms, no manual data entry.'],
+    ['Where does the data come from?',
+     'Every report is assembled from official public registries, verified government datasets and licensed market intelligence. Each finding in the report carries its source.'],
+    ['How long does a report take?',
+     'Seconds. Records collection, market comparison and risk detection run in parallel, and the AI verdict is generated as soon as the last signal arrives.'],
+    ['How accurate is the AI valuation?',
+     'Valuations are built from comparable sales, price history and current demand, and are always presented with a confidence range rather than a single number.'],
+    ['Can I use AVENOR for investment analysis?',
+     'Yes. Every report includes rental yield, ROI, projected cash flow and a composite investment score alongside the risk assessment.'],
+    ['Do you offer an API?',
+     'Yes. The same intelligence that powers a report is available programmatically for portfolio monitoring and high-volume screening.']
+  ].map(([q, a]) =>
+    `<div class="qa card glass">
+       <button type="button"><span>${q}</span><span class="plus"></span></button>
+       <div class="a"><div><p>${a}</p></div></div>
+     </div>`
+  ).join(''));
+
+  document.getElementById('faq').addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (btn) btn.parentElement.classList.toggle('open');
+  });
+
+  /* Reveal on scroll — cards stagger inside their container */
+  document.querySelectorAll('.grid-3, .grid-4, .steps, .widgets, .faq').forEach(c => {
+    [...c.children].forEach((el, i) => {
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 70) + 'ms';
+    });
+  });
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) { en.target.classList.add('in'); obs.unobserve(en.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal, .timeline').forEach(el => obs.observe(el));
+
+  /* Widget parallax */
+  const floats = [...document.querySelectorAll('.float')];
+  let ticking = false;
+  const parallax = () => {
+    const mid = innerHeight / 2;
+    floats.forEach(f => {
+      const b = f.getBoundingClientRect();
+      f.style.transform = `translateY(${(b.top + b.height / 2 - mid) * -f.dataset.speed}px)`;
+    });
+    ticking = false;
+  };
+  addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(parallax); }
+  }, { passive: true });
+  parallax();
 })();
 </script>
 
