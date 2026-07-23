@@ -98,7 +98,31 @@
     transition: color 280ms ease-out, background 280ms ease-out;
   }
   .nav-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
-  .nav-right { display: flex; justify-content: flex-end; }
+  .nav-right { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+  .lang {
+    display: flex; align-items: center; gap: 1px;
+    padding: 3px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  .lang button {
+    border: none; background: none;
+    font-family: inherit;
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.42);
+    padding: 5px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: color 260ms ease-out, background 260ms ease-out;
+  }
+  .lang button:hover { color: rgba(255, 255, 255, 0.8); }
+  .lang button.on {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.11);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
   .signin {
     color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
@@ -828,25 +852,32 @@
     <span class="domain">AVENORA.PL</span>
   </div>
   <div class="nav-links">
-    <a href="#report">Report</a>
-    <a href="#data">Data</a>
-    <a href="#how">How It Works</a>
-    <a href="#pricing">Pricing</a>
-    <a href="#faq">FAQ</a>
+    <a href="#report" data-i18n="nav.report">Report</a>
+    <a href="#data" data-i18n="nav.data">Data</a>
+    <a href="#how" data-i18n="nav.how">How It Works</a>
+    <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+    <a href="#faq" data-i18n="nav.faq">FAQ</a>
   </div>
-  <div class="nav-right"><a href="#" class="signin">Sign In</a></div>
+  <div class="nav-right">
+    <div class="lang" id="lang">
+      <button type="button" data-lang="pl">PL</button>
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="ru">RU</button>
+    </div>
+    <a href="#" class="signin" data-i18n="nav.signin">Sign In</a>
+  </div>
 </nav>
 
 <div class="ui">
   <div class="hero">
     <div class="badge glass">
       <span class="dot"></span>
-      AI-Powered Real Estate Intelligence
+      <span data-i18n="hero.badge">AI-Powered Real Estate Intelligence</span>
     </div>
 
-    <h1>Understand Any Property<br><span class="accent">Before You Buy.</span></h1>
+    <h1><span data-i18n="hero.h1a">Understand Any Property</span><br><span class="accent" data-i18n="hero.h1b">Before You Buy.</span></h1>
 
-    <p class="desc">
+    <p class="desc" data-i18n="hero.desc">
       Paste any property listing and receive a professional AI report built from official
       records, market intelligence, neighborhood insights, and trusted public data.
     </p>
@@ -861,9 +892,10 @@
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>
-      <input id="url" type="text" placeholder="Paste property listing URL..." spellcheck="false">
+      <input id="url" type="text" placeholder="Paste property listing URL..."
+             data-i18n-placeholder="hero.placeholder" spellcheck="false">
       <button class="analyze" type="submit">
-        <span class="label">Analyze</span>
+        <span class="label" data-i18n="hero.analyze">Analyze</span>
         <svg class="arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h13M13 6l6 6-6 6" />
         </svg>
@@ -871,11 +903,11 @@
     </form>
 
     <div class="row" id="row">
-      <div class="chip glass">Official Records</div>
-      <div class="chip glass">Market Analysis</div>
-      <div class="chip glass">Neighborhood</div>
-      <div class="chip glass">AI Valuation</div>
-      <div class="chip glass">Investment Score</div>
+      <div class="chip glass" data-i18n="chip.records">Official Records</div>
+      <div class="chip glass" data-i18n="chip.market">Market Analysis</div>
+      <div class="chip glass" data-i18n="chip.hood">Neighborhood</div>
+      <div class="chip glass" data-i18n="chip.valuation">AI Valuation</div>
+      <div class="chip glass" data-i18n="chip.score">Investment Score</div>
       <div class="status" id="status"></div>
     </div>
   </div>
@@ -885,21 +917,19 @@
   <!-- 2. PROPERTY REPORT -->
   <section id="report">
     <div class="sec-head reveal">
-      <span class="eyebrow">Property report</span>
-      <h2>Discover Every<br><span class="accent">Property Insight.</span></h2>
-      <p class="sec-sub">Get a complete AI-powered property report in seconds. Explore market
-        trends, investment potential, neighborhood intelligence, and every factor that
-        influences your decision—all in one place.</p>
+      <span class="eyebrow" data-i18n="report.eyebrow">Property report</span>
+      <h2><span data-i18n="report.h1">Discover Every</span><br><span class="accent" data-i18n="report.h2">Property Insight.</span></h2>
+      <p class="sec-sub" data-i18n="report.sub">Get a complete AI-powered property report in seconds.</p>
     </div>
 
     <div class="dash card glass reveal">
       <div class="dash-bar">
-        <span class="tab on">Overview</span>
-        <span class="tab">Records</span>
-        <span class="tab">Market</span>
-        <span class="tab">Neighborhood</span>
-        <span class="tab">Risks</span>
-        <span class="dash-ref">Report A-4821</span>
+        <span class="tab on" data-i18n="tab.overview">Overview</span>
+        <span class="tab" data-i18n="tab.records">Records</span>
+        <span class="tab" data-i18n="tab.market">Market</span>
+        <span class="tab" data-i18n="tab.hood">Neighborhood</span>
+        <span class="tab" data-i18n="tab.risks">Risks</span>
+        <span class="dash-ref" data-i18n="dash.ref">Report A-4821</span>
       </div>
 
       <div class="dash-body">
@@ -907,7 +937,7 @@
 
         <div class="dash-grid">
           <div class="panel">
-            <div class="panel-head"><span>Price history</span><span class="pos">+18.4%</span></div>
+            <div class="panel-head"><span data-i18n="panel.price">Price history</span><span class="pos">+18.4%</span></div>
             <svg class="spark" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true">
               <path class="fill" d="M0,72 L38,66 L76,69 L114,52 L152,56 L190,38 L228,30 L266,22 L300,14 L300,90 L0,90 Z" />
               <path class="line" d="M0,72 L38,66 L76,69 L114,52 L152,56 L190,38 L228,30 L266,22 L300,14" />
@@ -916,21 +946,21 @@
           </div>
 
           <div class="panel">
-            <div class="panel-head"><span>Neighborhood</span><span class="muted">Excellent</span></div>
+            <div class="panel-head"><span data-i18n="panel.hood">Neighborhood</span><span class="muted" data-i18n="val.excellent">Excellent</span></div>
             <div class="meters" id="dashMeters"></div>
           </div>
 
           <div class="panel">
-            <div class="panel-head"><span>Ownership timeline</span></div>
+            <div class="panel-head"><span data-i18n="panel.owner">Ownership timeline</span></div>
             <div class="years">
-              <div>2011<em>Purchased</em></div><span></span>
-              <div>2018<em>Renovated</em></div><span></span>
-              <div>2025<em>Listed</em></div>
+              <div>2011<em data-i18n="own.bought">Purchased</em></div><span></span>
+              <div>2018<em data-i18n="own.renov">Renovated</em></div><span></span>
+              <div>2025<em data-i18n="own.listed">Listed</em></div>
             </div>
           </div>
 
           <div class="panel">
-            <div class="panel-head"><span>Key insights</span></div>
+            <div class="panel-head"><span data-i18n="panel.insights">Key insights</span></div>
             <ul class="insights" id="dashInsights"></ul>
           </div>
         </div>
@@ -942,12 +972,10 @@
   <section id="data">
     <div class="split">
       <div class="reveal">
-        <span class="eyebrow">Verified data</span>
-        <h2 class="split-h2">Trusted Data.<br><span class="accent">Smarter Decisions.</span></h2>
-        <p class="split-p">Every report is built from reliable public records, official datasets,
-          and continuously updated market information to help users make confident property
-          decisions.</p>
-        <a href="#" class="ghost-btn">Learn more about our data ↗</a>
+        <span class="eyebrow" data-i18n="data.eyebrow">Verified data</span>
+        <h2 class="split-h2"><span data-i18n="data.h1">Trusted Data.</span><br><span class="accent" data-i18n="data.h2">Smarter Decisions.</span></h2>
+        <p class="split-p" data-i18n="data.sub">Every report is built from reliable public records.</p>
+        <a href="#" class="ghost-btn" data-i18n="data.btn">Learn more about our data ↗</a>
       </div>
       <div class="sources" id="sources"></div>
     </div>
@@ -957,10 +985,9 @@
   <!-- 4. HOW IT WORKS — the original timeline, kept as-is -->
   <section id="how">
     <div class="sec-head reveal">
-      <span class="eyebrow">How it works</span>
-      <h2>Behind Every<br><span class="accent">AVENORA Report.</span></h2>
-      <p class="sec-sub">From a single property address to hundreds of analyzed data points,
-        AVENORA transforms complex information into clear, actionable insights within seconds.</p>
+      <span class="eyebrow" data-i18n="how.eyebrow">How it works</span>
+      <h2><span data-i18n="how.h1">Behind Every</span><br><span class="accent" data-i18n="how.h2">AVENORA Report.</span></h2>
+      <p class="sec-sub" data-i18n="how.sub">From a single property address to hundreds of analyzed data points.</p>
     </div>
     <div class="timeline reveal" id="timeline">
       <div class="rail"></div>
@@ -971,18 +998,16 @@
   <!-- 5. NEIGHBORHOOD INTELLIGENCE — map deferred, placeholder only -->
   <section id="neighborhood">
     <div class="sec-head reveal">
-      <span class="eyebrow">Neighborhood intelligence</span>
-      <h2>Everything Beyond<br><span class="accent">The Front Door.</span></h2>
-      <p class="sec-sub">A property is only part of the story. Explore crime, schools, transport,
-        healthcare, green spaces, investment potential, and other neighborhood insights before
-        making a decision.</p>
+      <span class="eyebrow" data-i18n="hood.eyebrow">Neighborhood intelligence</span>
+      <h2><span data-i18n="hood.h1">Everything Beyond</span><br><span class="accent" data-i18n="hood.h2">The Front Door.</span></h2>
+      <p class="sec-sub" data-i18n="hood.sub">A property is only part of the story.</p>
     </div>
     <div class="reveal">
       <div class="layers" id="layers"></div>
       <div class="map-slot card glass">
         <div class="map-note">
-          <span class="map-title">Interactive map</span>
-          <span class="map-sub">In development</span>
+          <span class="map-title" data-i18n="map.title">Interactive map</span>
+          <span class="map-sub" data-i18n="map.sub">In development</span>
         </div>
       </div>
     </div>
@@ -991,11 +1016,9 @@
   <!-- 6. YOUR WORKSPACE -->
   <section id="workspace">
     <div class="sec-head reveal">
-      <span class="eyebrow">Your workspace</span>
-      <h2>Save, Compare<br><span class="accent">&amp; Decide.</span></h2>
-      <p class="sec-sub">Every analysis is automatically saved to your workspace. Access previous
-        reports, compare properties, search through your analysis history, and continue your
-        research at any time.</p>
+      <span class="eyebrow" data-i18n="work.eyebrow">Your workspace</span>
+      <h2><span data-i18n="work.h1">Save, Compare</span><br><span class="accent" data-i18n="work.h2">&amp; Decide.</span></h2>
+      <p class="sec-sub" data-i18n="work.sub">Every analysis is automatically saved to your workspace.</p>
     </div>
     <div class="grid-3" id="work"></div>
   </section>
@@ -1003,27 +1026,22 @@
   <!-- 7. PRICING -->
   <section id="pricing">
     <div class="sec-head reveal">
-      <span class="eyebrow">Pricing</span>
-      <h2>Early Access.<br><span class="accent">Free For Everyone.</span></h2>
+      <span class="eyebrow" data-i18n="price.eyebrow">Pricing</span>
+      <h2><span data-i18n="price.h1">Early Access.</span><br><span class="accent" data-i18n="price.h2">Free For Everyone.</span></h2>
     </div>
     <div class="pricing-panel card glass reveal">
-      <p class="pricing-lead">We&rsquo;re currently in Early Access, so every feature is available 100% free.</p>
-      <p>Our focus right now isn&rsquo;t revenue&mdash;it&rsquo;s building the best AI real estate
-        platform with feedback from our first users. Every conversation, suggestion, and report
-        helps us improve the product.</p>
-      <p>As our community grows and new premium features are introduced, paid plans will become
-        available. Early users will receive priority access and exclusive benefits when pricing
-        launches.</p>
-      <p class="pricing-close">Join now while it&rsquo;s free and help shape the future of AI-powered
-        real estate.</p>
+      <p class="pricing-lead" data-i18n="price.p1">We&rsquo;re currently in Early Access.</p>
+      <p data-i18n="price.p2">Our focus right now isn&rsquo;t revenue.</p>
+      <p data-i18n="price.p3">As our community grows, paid plans will become available.</p>
+      <p class="pricing-close" data-i18n="price.p4">Join now while it&rsquo;s free.</p>
     </div>
   </section>
 
   <!-- 8. FAQ -->
   <section id="faq">
     <div class="sec-head reveal">
-      <span class="eyebrow">FAQ</span>
-      <h2>Everything You<br><span class="accent">Need To Know.</span></h2>
+      <span class="eyebrow" data-i18n="faq.eyebrow">FAQ</span>
+      <h2><span data-i18n="faq.h1">Everything You</span><br><span class="accent" data-i18n="faq.h2">Need To Know.</span></h2>
     </div>
     <div class="faq" id="faqList"></div>
   </section>
@@ -1040,35 +1058,241 @@
         </svg>
         <span>AVENORA</span>
       </div>
-      <p class="foot-desc">Professional AI property intelligence platform.</p>
+      <p class="foot-desc" data-i18n="foot.desc">Professional AI property intelligence platform.</p>
     </div>
     <div class="foot-col reveal">
-      <h4>Navigation</h4>
-      <a href="#report">Report</a><a href="#data">Data</a><a href="#how">How It Works</a>
-      <a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+      <h4 data-i18n="foot.nav">Navigation</h4>
+      <a href="#report" data-i18n="nav.report">Report</a><a href="#data" data-i18n="nav.data">Data</a>
+      <a href="#how" data-i18n="nav.how">How It Works</a>
+      <a href="#pricing" data-i18n="nav.pricing">Pricing</a><a href="#faq" data-i18n="nav.faq">FAQ</a>
     </div>
     <div class="foot-col reveal">
-      <h4>Contact</h4>
-      <a href="#">Support</a><a href="#">Sales</a><a href="#">Press</a>
+      <h4 data-i18n="foot.contact">Contact</h4>
+      <a href="#" data-i18n="foot.support">Support</a><a href="#" data-i18n="foot.sales">Sales</a>
+      <a href="#" data-i18n="foot.press">Press</a>
     </div>
     <div class="foot-col reveal">
-      <h4>Legal</h4>
-      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a>
+      <h4 data-i18n="foot.legal">Legal</h4>
+      <a href="#" data-i18n="foot.privacy">Privacy</a><a href="#" data-i18n="foot.terms">Terms</a>
+      <a href="#" data-i18n="foot.cookies">Cookies</a>
     </div>
   </div>
-  <div class="foot-bottom reveal">© 2026 AVENORA</div>
+  <div class="foot-bottom reveal" data-i18n="foot.copy">© 2026 AVENORA</div>
 </footer>
 
 <script>
+/* ---------- i18n dictionary. Polish is the default language. ---------- */
+window.T = {
+  pl: {
+    'meta.title': 'AVENORA — Poznaj każdą nieruchomość zanim ją kupisz',
+    'nav.report': 'Raport', 'nav.data': 'Dane', 'nav.how': 'Jak to działa',
+    'nav.pricing': 'Cennik', 'nav.faq': 'FAQ', 'nav.signin': 'Zaloguj się',
+    'hero.badge': 'Analiza nieruchomości oparta na AI',
+    'hero.h1a': 'Poznaj każdą nieruchomość', 'hero.h1b': 'zanim ją kupisz.',
+    'hero.desc': 'Wklej dowolne ogłoszenie i otrzymaj profesjonalny raport AI zbudowany na oficjalnych rejestrach, danych rynkowych, analizie okolicy i zaufanych źródłach publicznych.',
+    'hero.placeholder': 'Wklej link do ogłoszenia...', 'hero.analyze': 'Analizuj',
+    'chip.records': 'Rejestry urzędowe', 'chip.market': 'Analiza rynku', 'chip.hood': 'Okolica',
+    'chip.valuation': 'Wycena AI', 'chip.score': 'Ocena inwestycji',
+    status: ['Wykryto ogłoszenie', 'Zidentyfikowano adres', 'Rejestry urzędowe dostępne',
+             'Historia rynku dostępna', 'Analiza okolicy dostępna', 'Wycena AI gotowa'],
+    'report.eyebrow': 'Raport o nieruchomości', 'report.h1': 'Poznaj każdy szczegół',
+    'report.h2': 'nieruchomości.',
+    'report.sub': 'Otrzymaj kompletny raport AI w kilka sekund. Trendy rynkowe, potencjał inwestycyjny, analiza okolicy i każdy czynnik wpływający na Twoją decyzję — wszystko w jednym miejscu.',
+    'tab.overview': 'Przegląd', 'tab.records': 'Rejestry', 'tab.market': 'Rynek',
+    'tab.hood': 'Okolica', 'tab.risks': 'Ryzyka', 'dash.ref': 'Raport A-4821',
+    kpi: ['Ocena ryzyka', 'Szacowana wartość', 'Ocena inwestycyjna'],
+    'val.buy': 'Zdecydowanie kupuj', 'val.excellent': 'Doskonała',
+    'panel.price': 'Historia cen', 'panel.hood': 'Okolica',
+    'panel.owner': 'Historia własności', 'panel.insights': 'Kluczowe wnioski',
+    'own.bought': 'Zakup', 'own.renov': 'Remont', 'own.listed': 'Wystawiona',
+    meters: ['Bezpieczeństwo', 'Szkoły', 'Transport', 'Tereny zielone'],
+    insights: ['Cena o 6% niższa niż porównywalne transakcje przy tej samej ulicy.',
+               'Brak obciążeń i ograniczeń w księdze wieczystej.',
+               'Popyt na najem w tej dzielnicy wzrósł o 12% rok do roku.',
+               'Klasa energetyczna B — koszty utrzymania poniżej średniej.'],
+    'data.eyebrow': 'Zweryfikowane dane', 'data.h1': 'Wiarygodne dane.',
+    'data.h2': 'Trafniejsze decyzje.',
+    'data.sub': 'Każdy raport powstaje na podstawie rzetelnych rejestrów publicznych, oficjalnych zbiorów danych i stale aktualizowanych informacji rynkowych.',
+    'data.btn': 'Dowiedz się więcej o danych ↗',
+    sources: ['Rejestry państwowe', 'Księgi wieczyste', 'Analityka rynku', 'Przetwarzanie AI',
+              'Zdjęcia satelitarne', 'Dane transportowe', 'Demografia', 'Świadectwa energetyczne'],
+    stats: ['Źródeł danych', 'Przeanalizowanych sygnałów', 'Średni czas raportu', 'Pewność AI'],
+    'how.eyebrow': 'Jak to działa', 'how.h1': 'Za każdym raportem', 'how.h2': 'AVENORA.',
+    'how.sub': 'Od jednego adresu do setek przeanalizowanych punktów danych — AVENORA zamienia złożone informacje w jasne wnioski w kilka sekund.',
+    'step.word': 'KROK',
+    steps: ['Wklej link do ogłoszenia', 'Zbierz rejestry urzędowe',
+            'Przeanalizuj rynek i okolicę', 'Wykryj ryzyka', 'Wygeneruj raport AI'],
+    'hood.eyebrow': 'Analiza okolicy', 'hood.h1': 'Wszystko poza', 'hood.h2': 'progiem domu.',
+    'hood.sub': 'Nieruchomość to tylko część historii. Sprawdź bezpieczeństwo, szkoły, transport, opiekę zdrowotną, tereny zielone i potencjał inwestycyjny, zanim podejmiesz decyzję.',
+    layers: ['Przestępczość', 'Szkoły', 'Transport', 'Zdrowie', 'Tereny zielone', 'Inwestycje'],
+    'map.title': 'Mapa interaktywna', 'map.sub': 'W przygotowaniu',
+    'work.eyebrow': 'Twoja przestrzeń', 'work.h1': 'Zapisuj, porównuj', 'work.h2': 'i decyduj.',
+    'work.sub': 'Każda analiza zapisuje się automatycznie. Wracaj do wcześniejszych raportów, porównuj nieruchomości i przeszukuj historię w dowolnym momencie.',
+    work: [['Historia raportów', 'Każda analiza zapisuje się automatycznie. Wróć do dowolnej nieruchomości w dowolnej chwili.'],
+           ['Porównywanie nieruchomości', 'Zestaw raporty obok siebie i sprawdź, która nieruchomość naprawdę broni się liczbami.'],
+           ['Wyszukiwanie analiz', 'Znajdź dowolny raport po adresie, dacie lub ocenie, bez przekopywania się przez pliki.']],
+    'price.eyebrow': 'Cennik', 'price.h1': 'Wczesny dostęp.', 'price.h2': 'Bezpłatnie dla wszystkich.',
+    'price.p1': 'Jesteśmy obecnie we wczesnym dostępie, więc każda funkcja jest w 100% bezpłatna.',
+    'price.p2': 'Naszym celem nie są teraz przychody — budujemy najlepszą platformę AI dla rynku nieruchomości w oparciu o opinie pierwszych użytkowników. Każda rozmowa, sugestia i raport pomagają nam ulepszać produkt.',
+    'price.p3': 'Wraz z rozwojem społeczności i pojawianiem się nowych funkcji premium wprowadzimy plany płatne. Pierwsi użytkownicy otrzymają priorytetowy dostęp i wyjątkowe korzyści w momencie startu cennika.',
+    'price.p4': 'Dołącz teraz, póki jest bezpłatnie, i współtwórz przyszłość nieruchomości opartych na AI.',
+    'faq.eyebrow': 'FAQ', 'faq.h1': 'Wszystko, co', 'faq.h2': 'musisz wiedzieć.',
+    faq: [['Czego potrzebuję na start?', 'Wystarczy link do ogłoszenia. AVENORA rozpozna adres, dopasuje go do oficjalnych rejestrów i automatycznie rozpocznie analizę — bez formularzy i ręcznego wpisywania danych.'],
+          ['Skąd pochodzą dane?', 'Każdy raport powstaje z oficjalnych rejestrów publicznych, zweryfikowanych zbiorów danych państwowych i licencjonowanej analityki rynku. Przy każdym ustaleniu podajemy źródło.'],
+          ['Ile trwa przygotowanie raportu?', 'Około trzydziestu sekund. Zbieranie rejestrów, porównanie rynkowe i wykrywanie ryzyk działają równolegle, a werdykt AI powstaje, gdy dotrze ostatni sygnał.'],
+          ['Jakie lokalizacje są obsługiwane?', 'Zasięg zależy od dostępności oficjalnych rejestrów i rozszerza się rynek po rynku. Wklej ogłoszenie, a AVENORA od razu powie, czy dany adres jest objęty analizą.'],
+          ['Ile kosztuje raport?', 'Jesteśmy we wczesnym dostępie, więc wszystkie funkcje są obecnie bezpłatne. Plany płatne pojawią się razem z funkcjami premium.'],
+          ['Czy moje raporty są zapisywane?', 'Tak. Każda analiza trafia automatycznie do Twojej przestrzeni, więc możesz do niej wracać, porównywać i przeszukiwać bez ponownego uruchamiania.']],
+    'foot.desc': 'Profesjonalna platforma analizy nieruchomości oparta na AI.',
+    'foot.nav': 'Nawigacja', 'foot.contact': 'Kontakt', 'foot.legal': 'Informacje prawne',
+    'foot.support': 'Wsparcie', 'foot.sales': 'Sprzedaż', 'foot.press': 'Prasa',
+    'foot.privacy': 'Prywatność', 'foot.terms': 'Regulamin', 'foot.cookies': 'Pliki cookie',
+    'foot.copy': '© 2026 AVENORA'
+  },
+
+  en: {
+    'meta.title': 'AVENORA — Understand Any Property Before You Buy',
+    'nav.report': 'Report', 'nav.data': 'Data', 'nav.how': 'How It Works',
+    'nav.pricing': 'Pricing', 'nav.faq': 'FAQ', 'nav.signin': 'Sign In',
+    'hero.badge': 'AI-Powered Real Estate Intelligence',
+    'hero.h1a': 'Understand Any Property', 'hero.h1b': 'Before You Buy.',
+    'hero.desc': 'Paste any property listing and receive a professional AI report built from official records, market intelligence, neighborhood insights, and trusted public data.',
+    'hero.placeholder': 'Paste property listing URL...', 'hero.analyze': 'Analyze',
+    'chip.records': 'Official Records', 'chip.market': 'Market Analysis', 'chip.hood': 'Neighborhood',
+    'chip.valuation': 'AI Valuation', 'chip.score': 'Investment Score',
+    status: ['Listing detected', 'Address identified', 'Official records available',
+             'Market history available', 'Neighborhood analysis available', 'AI valuation ready'],
+    'report.eyebrow': 'Property report', 'report.h1': 'Discover Every',
+    'report.h2': 'Property Insight.',
+    'report.sub': 'Get a complete AI-powered property report in seconds. Explore market trends, investment potential, neighborhood intelligence, and every factor that influences your decision — all in one place.',
+    'tab.overview': 'Overview', 'tab.records': 'Records', 'tab.market': 'Market',
+    'tab.hood': 'Neighborhood', 'tab.risks': 'Risks', 'dash.ref': 'Report A-4821',
+    kpi: ['Risk Score', 'Estimated Value', 'Investment Rating'],
+    'val.buy': 'Strong Buy', 'val.excellent': 'Excellent',
+    'panel.price': 'Price history', 'panel.hood': 'Neighborhood',
+    'panel.owner': 'Ownership timeline', 'panel.insights': 'Key insights',
+    'own.bought': 'Purchased', 'own.renov': 'Renovated', 'own.listed': 'Listed',
+    meters: ['Safety', 'Schools', 'Transport', 'Green spaces'],
+    insights: ['Priced 6% below comparable sales on the same street.',
+               'No outstanding charges or restrictions on the title.',
+               'Rental demand in this district rose 12% year over year.',
+               'Energy rating B — below-average running costs.'],
+    'data.eyebrow': 'Verified data', 'data.h1': 'Trusted Data.',
+    'data.h2': 'Smarter Decisions.',
+    'data.sub': 'Every report is built from reliable public records, official datasets, and continuously updated market information to help users make confident property decisions.',
+    'data.btn': 'Learn more about our data ↗',
+    sources: ['Government Records', 'Land Registry', 'Market Analytics', 'AI Processing',
+              'Satellite Imagery', 'Transport Data', 'Demographics', 'Energy Certificates'],
+    stats: ['Data Sources', 'Signals Analyzed', 'Average Report Time', 'AI Confidence'],
+    'how.eyebrow': 'How it works', 'how.h1': 'Behind Every', 'how.h2': 'AVENORA Report.',
+    'how.sub': 'From a single property address to hundreds of analyzed data points, AVENORA transforms complex information into clear, actionable insights within seconds.',
+    'step.word': 'STEP',
+    steps: ['Paste Property URL', 'Collect Official Records',
+            'Analyze Market & Neighborhood', 'Detect Risks', 'Generate AI Report'],
+    'hood.eyebrow': 'Neighborhood intelligence', 'hood.h1': 'Everything Beyond', 'hood.h2': 'The Front Door.',
+    'hood.sub': 'A property is only part of the story. Explore crime, schools, transport, healthcare, green spaces, investment potential, and other neighborhood insights before making a decision.',
+    layers: ['Crime', 'Schools', 'Transport', 'Healthcare', 'Green Spaces', 'Investment'],
+    'map.title': 'Interactive map', 'map.sub': 'In development',
+    'work.eyebrow': 'Your workspace', 'work.h1': 'Save, Compare', 'work.h2': '& Decide.',
+    'work.sub': 'Every analysis is automatically saved to your workspace. Access previous reports, compare properties, search through your analysis history, and continue your research at any time.',
+    work: [['Report History', 'Every analysis is saved automatically. Return to any property you have looked at, at any time.'],
+           ['Compare Properties', 'Put reports side by side and see which property actually holds up on the numbers.'],
+           ['Search Your Analyses', 'Find any past report by address, date or score without digging through files.']],
+    'price.eyebrow': 'Pricing', 'price.h1': 'Early Access.', 'price.h2': 'Free For Everyone.',
+    'price.p1': 'We’re currently in Early Access, so every feature is available 100% free.',
+    'price.p2': 'Our focus right now isn’t revenue — it’s building the best AI real estate platform with feedback from our first users. Every conversation, suggestion, and report helps us improve the product.',
+    'price.p3': 'As our community grows and new premium features are introduced, paid plans will become available. Early users will receive priority access and exclusive benefits when pricing launches.',
+    'price.p4': 'Join now while it’s free and help shape the future of AI-powered real estate.',
+    'faq.eyebrow': 'FAQ', 'faq.h1': 'Everything You', 'faq.h2': 'Need To Know.',
+    faq: [['What do I need to get started?', 'A listing URL is enough. AVENORA resolves the address, matches it against official registries and begins the analysis automatically — no forms, no manual data entry.'],
+          ['Where does the data come from?', 'Every report is assembled from official public registries, verified government datasets and licensed market intelligence. Each finding in the report carries its source.'],
+          ['How long does a report take?', 'Around thirty seconds. Records collection, market comparison and risk detection run in parallel, and the AI verdict is generated as soon as the last signal arrives.'],
+          ['Which locations are supported?', 'Coverage follows official registry availability and expands market by market. Paste a listing and AVENORA will tell you immediately whether that address is covered.'],
+          ['How much does a report cost?', 'We are in Early Access, so every feature is currently free. Paid plans will arrive alongside premium features.'],
+          ['Are my reports saved?', 'Yes. Every analysis lands in your workspace automatically, so you can revisit, compare and search past reports without running them again.']],
+    'foot.desc': 'Professional AI property intelligence platform.',
+    'foot.nav': 'Navigation', 'foot.contact': 'Contact', 'foot.legal': 'Legal',
+    'foot.support': 'Support', 'foot.sales': 'Sales', 'foot.press': 'Press',
+    'foot.privacy': 'Privacy', 'foot.terms': 'Terms', 'foot.cookies': 'Cookies',
+    'foot.copy': '© 2026 AVENORA'
+  },
+
+  ru: {
+    'meta.title': 'AVENORA — Изучите недвижимость до покупки',
+    'nav.report': 'Отчёт', 'nav.data': 'Данные', 'nav.how': 'Как это работает',
+    'nav.pricing': 'Цены', 'nav.faq': 'FAQ', 'nav.signin': 'Войти',
+    'hero.badge': 'Аналитика недвижимости на базе ИИ',
+    'hero.h1a': 'Изучите недвижимость', 'hero.h1b': 'до покупки.',
+    'hero.desc': 'Вставьте ссылку на любое объявление и получите профессиональный отчёт ИИ на основе официальных реестров, рыночных данных, анализа района и проверенных публичных источников.',
+    'hero.placeholder': 'Вставьте ссылку на объявление...', 'hero.analyze': 'Анализ',
+    'chip.records': 'Официальные реестры', 'chip.market': 'Анализ рынка', 'chip.hood': 'Район',
+    'chip.valuation': 'Оценка ИИ', 'chip.score': 'Инвест-оценка',
+    status: ['Объявление найдено', 'Адрес определён', 'Реестры доступны',
+             'История рынка доступна', 'Анализ района доступен', 'Оценка ИИ готова'],
+    'report.eyebrow': 'Отчёт о недвижимости', 'report.h1': 'Узнайте о недвижимости',
+    'report.h2': 'всё до мелочей.',
+    'report.sub': 'Полный отчёт ИИ за секунды. Тренды рынка, инвестиционный потенциал, аналитика района и каждый фактор, влияющий на решение — всё в одном месте.',
+    'tab.overview': 'Обзор', 'tab.records': 'Реестры', 'tab.market': 'Рынок',
+    'tab.hood': 'Район', 'tab.risks': 'Риски', 'dash.ref': 'Отчёт A-4821',
+    kpi: ['Оценка риска', 'Оценочная стоимость', 'Инвест-рейтинг'],
+    'val.buy': 'Уверенная покупка', 'val.excellent': 'Отличный',
+    'panel.price': 'История цен', 'panel.hood': 'Район',
+    'panel.owner': 'История владения', 'panel.insights': 'Ключевые выводы',
+    'own.bought': 'Покупка', 'own.renov': 'Ремонт', 'own.listed': 'Продажа',
+    meters: ['Безопасность', 'Школы', 'Транспорт', 'Зелёные зоны'],
+    insights: ['Цена на 6% ниже сопоставимых сделок на той же улице.',
+               'Обременений и ограничений в реестре не зарегистрировано.',
+               'Спрос на аренду в районе вырос на 12% за год.',
+               'Класс энергоэффективности B — расходы ниже средних.'],
+    'data.eyebrow': 'Проверенные данные', 'data.h1': 'Надёжные данные.',
+    'data.h2': 'Точные решения.',
+    'data.sub': 'Каждый отчёт строится на достоверных публичных реестрах, официальных наборах данных и постоянно обновляемой рыночной информации.',
+    'data.btn': 'Подробнее об источниках ↗',
+    sources: ['Госреестры', 'Кадастр', 'Аналитика рынка', 'Обработка ИИ',
+              'Спутниковые снимки', 'Транспортные данные', 'Демография', 'Энергосертификаты'],
+    stats: ['Источников данных', 'Проанализировано сигналов', 'Среднее время отчёта', 'Уверенность ИИ'],
+    'how.eyebrow': 'Как это работает', 'how.h1': 'За каждым отчётом', 'how.h2': 'AVENORA.',
+    'how.sub': 'От одного адреса до сотен проанализированных параметров — AVENORA превращает сложные данные в понятные выводы за секунды.',
+    'step.word': 'ШАГ',
+    steps: ['Вставьте ссылку', 'Соберите официальные реестры',
+            'Проанализируйте рынок и район', 'Выявите риски', 'Сформируйте отчёт ИИ'],
+    'hood.eyebrow': 'Аналитика района', 'hood.h1': 'Всё, что за', 'hood.h2': 'порогом дома.',
+    'hood.sub': 'Недвижимость — лишь часть истории. Изучите преступность, школы, транспорт, медицину, зелёные зоны и инвестиционный потенциал до принятия решения.',
+    layers: ['Преступность', 'Школы', 'Транспорт', 'Медицина', 'Зелёные зоны', 'Инвестиции'],
+    'map.title': 'Интерактивная карта', 'map.sub': 'В разработке',
+    'work.eyebrow': 'Ваше пространство', 'work.h1': 'Сохраняйте, сравнивайте', 'work.h2': 'и решайте.',
+    'work.sub': 'Каждый анализ сохраняется автоматически. Возвращайтесь к прошлым отчётам, сравнивайте объекты и ищите по истории в любой момент.',
+    work: [['История отчётов', 'Каждый анализ сохраняется сам. Вернитесь к любому объекту в любое время.'],
+           ['Сравнение объектов', 'Поставьте отчёты рядом и посмотрите, какой объект действительно выигрывает по цифрам.'],
+           ['Поиск по анализам', 'Найдите любой отчёт по адресу, дате или оценке, не разбирая файлы.']],
+    'price.eyebrow': 'Цены', 'price.h1': 'Ранний доступ.', 'price.h2': 'Бесплатно для всех.',
+    'price.p1': 'Сейчас мы в раннем доступе, поэтому все возможности доступны на 100% бесплатно.',
+    'price.p2': 'Наша цель сейчас — не выручка, а создание лучшей ИИ-платформы для рынка недвижимости вместе с первыми пользователями. Каждый разговор, предложение и отчёт помогают нам улучшать продукт.',
+    'price.p3': 'По мере роста сообщества и появления премиум-возможностей появятся платные тарифы. Первые пользователи получат приоритетный доступ и особые условия на старте.',
+    'price.p4': 'Присоединяйтесь, пока бесплатно, и помогите определить будущее ИИ в недвижимости.',
+    'faq.eyebrow': 'FAQ', 'faq.h1': 'Всё, что нужно', 'faq.h2': 'знать.',
+    faq: [['Что нужно для начала?', 'Достаточно ссылки на объявление. AVENORA определит адрес, сопоставит его с официальными реестрами и запустит анализ автоматически — без форм и ручного ввода.'],
+          ['Откуда берутся данные?', 'Каждый отчёт собирается из официальных публичных реестров, проверенных государственных наборов данных и лицензированной рыночной аналитики. У каждого вывода указан источник.'],
+          ['Сколько готовится отчёт?', 'Около тридцати секунд. Сбор реестров, рыночное сравнение и выявление рисков идут параллельно, а вердикт ИИ формируется, как только приходит последний сигнал.'],
+          ['Какие регионы поддерживаются?', 'Покрытие зависит от доступности официальных реестров и расширяется рынок за рынком. Вставьте объявление — AVENORA сразу скажет, охвачен ли этот адрес.'],
+          ['Сколько стоит отчёт?', 'Мы в раннем доступе, поэтому сейчас все возможности бесплатны. Платные тарифы появятся вместе с премиум-функциями.'],
+          ['Сохраняются ли отчёты?', 'Да. Каждый анализ автоматически попадает в ваше пространство, поэтому к нему можно вернуться, сравнить и найти без повторного запуска.']],
+    'foot.desc': 'Профессиональная ИИ-платформа аналитики недвижимости.',
+    'foot.nav': 'Навигация', 'foot.contact': 'Контакты', 'foot.legal': 'Правовая информация',
+    'foot.support': 'Поддержка', 'foot.sales': 'Продажи', 'foot.press': 'Пресса',
+    'foot.privacy': 'Конфиденциальность', 'foot.terms': 'Условия', 'foot.cookies': 'Cookie',
+    'foot.copy': '© 2026 AVENORA'
+  }
+};
+
+window.LANG = (() => {
+  try { return localStorage.getItem('avenora.lang') || 'pl'; } catch { return 'pl'; }
+})();
+if (!window.T[window.LANG]) window.LANG = 'pl';
+</script>
+
+<script>
 (() => {
-  const STEPS = [
-    'Listing detected',
-    'Address identified',
-    'Official records available',
-    'Market history available',
-    'Neighborhood analysis available',
-    'AI valuation ready'
-  ];
   const CHECK = '<svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 6"/></svg>';
 
   const row = document.getElementById('row');
@@ -1076,8 +1300,16 @@
   const input = document.getElementById('url');
   const form = document.getElementById('search');
 
-  status.innerHTML = STEPS.map(s => `<div class="chip glass">${CHECK}${s}</div>`).join('');
-  const items = [...status.children];
+  let items = [];
+  const buildStatus = () => {
+    status.innerHTML = T[LANG].status
+      .map(s => `<div class="chip glass">${CHECK}${s}</div>`).join('');
+    items = [...status.children];
+  };
+  buildStatus();
+  // rebuilt on every language switch, so the captured list must be refreshed too
+  document.addEventListener('langchange', buildStatus);
+
   const chips = [...row.children].filter(el => el.classList.contains('chip'));
   let timer = null, shown = 0;
 
@@ -1167,90 +1399,68 @@
 
   const fill = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
 
-  /* 2 — Dashboard preview */
-  fill('dashKpis', [
-    ['Risk Score', '87 <small>/ 100</small>', 87],
-    ['Estimated Value', '€423,000', 64],
-    ['Investment Rating', 'Strong Buy', 78]
-  ].map(([l, v, w]) =>
-    `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div>
-      <div class="bar"><i style="width:${w}%"></i></div></div>`
-  ).join(''));
+  /* Every list-shaped section is generated from the active language, so a
+     switch just re-runs this and re-applies the scroll/rail wiring below. */
+  const renderContent = () => {
+    const t = T[LANG];
 
-  fill('dashMeters', [
-    ['Safety', 92], ['Schools', 86], ['Transport', 78], ['Green spaces', 71]
-  ].map(([t, v]) =>
-    `<div class="meter"><span>${t}<em style="font-style:normal">${v}</em></span>
-      <i><b style="width:${v}%"></b></i></div>`
-  ).join(''));
+    /* 2 — Dashboard preview */
+    fill('dashKpis', [
+      [t.kpi[0], '87 <small>/ 100</small>', 87],
+      [t.kpi[1], '€423,000', 64],
+      [t.kpi[2], t['val.buy'], 78]
+    ].map(([l, v, w]) =>
+      `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div>
+        <div class="bar"><i style="width:${w}%"></i></div></div>`
+    ).join(''));
 
-  fill('dashInsights', [
-    'Priced 6% below comparable sales on the same street.',
-    'No outstanding charges or restrictions on the title.',
-    'Rental demand in this district rose 12% year over year.',
-    'Energy rating B — below-average running costs.'
-  ].map(t => `<li>${t}</li>`).join(''));
+    fill('dashMeters', t.meters.map((label, i) =>
+      [label, [92, 86, 78, 71][i]]
+    ).map(([label, v]) =>
+      `<div class="meter"><span>${label}<em style="font-style:normal">${v}</em></span>
+        <i><b style="width:${v}%"></b></i></div>`
+    ).join(''));
 
-  /* 4 — Timeline (unchanged) */
-  fill('steps', [
-    ['Paste Property URL', I.link],
-    ['Collect Official Records', I.doc],
-    ['Analyze Market & Neighborhood', I.chart],
-    ['Detect Risks', I.shield],
-    ['Generate AI Report', I.report]
-  ].map(([t, ic], i) =>
-    `<div class="step card glass"><div class="icon">${svg(ic)}</div>
-      <div><div class="n">STEP ${i + 1}</div><h3>${t}</h3></div></div>`
-  ).join(''));
+    fill('dashInsights', t.insights.map(x => `<li>${x}</li>`).join(''));
 
-  /* 3 — Verified data: sources feed the AI processing tile in the middle */
-  fill('sources', [
-    ['Government Records', I.bank], ['Land Registry', I.book],
-    ['Market Analytics', I.chart], ['AI Processing', I.cpu, true],
-    ['Satellite Imagery', I.globe], ['Transport Data', I.bus],
-    ['Demographics', I.cap], ['Energy Certificates', I.bolt]
-  ].map(([t, ic, key]) =>
-    `<div class="source card glass${key ? ' key' : ''}"><div class="icon">${svg(ic)}</div><span>${t}</span></div>`
-  ).join(''));
+    /* 4 — Timeline */
+    fill('steps', t.steps.map((label, i) =>
+      [label, [I.link, I.doc, I.chart, I.shield, I.report][i]]
+    ).map(([label, ic], i) =>
+      `<div class="step card glass"><div class="icon">${svg(ic)}</div>
+        <div><div class="n">${t['step.word']} ${i + 1}</div><h3>${label}</h3></div></div>`
+    ).join(''));
 
-  fill('stats', [
-    ['250+', 'Data Sources'], ['2,481', 'Signals Analyzed'],
-    ['30 sec', 'Average Report Time'], ['96%', 'AI Confidence']
-  ].map(([n, t]) => `<div class="stat"><div class="n">${n}</div><div class="t">${t}</div></div>`).join(''));
+    /* 3 — Verified data: AI Processing is the highlighted tile */
+    fill('sources', t.sources.map((label, i) =>
+      `<div class="source card glass${i === 3 ? ' key' : ''}">
+        <div class="icon">${svg([I.bank, I.book, I.chart, I.cpu, I.globe, I.bus, I.cap, I.bolt][i])}</div>
+        <span>${label}</span></div>`
+    ).join(''));
 
-  /* 5 — Neighborhood layers (map itself is deferred) */
-  fill('layers', ['Crime', 'Schools', 'Transport', 'Healthcare', 'Green Spaces', 'Investment']
-    .map(t => `<div class="chip glass">${t}</div>`).join(''));
+    fill('stats', t.stats.map((label, i) =>
+      `<div class="stat"><div class="n">${['250+', '2,481', '30 sec', '96%'][i]}</div>
+        <div class="t">${label}</div></div>`
+    ).join(''));
 
-  /* 6 — Workspace */
-  fill('work', [
-    ['Report History', I.doc, 'Every analysis is saved automatically. Return to any property you have looked at, at any time.'],
-    ['Compare Properties', I.layers, 'Put reports side by side and see which property actually holds up on the numbers.'],
-    ['Search Your Analyses', I.target, 'Find any past report by address, date or score without digging through files.']
-  ].map(([t, ic, p]) =>
-    `<div class="work card glass"><div class="icon">${svg(ic)}</div><h3>${t}</h3><p>${p}</p></div>`
-  ).join(''));
+    /* 5 — Neighborhood layers (map itself is deferred) */
+    fill('layers', t.layers.map(x => `<div class="chip glass">${x}</div>`).join(''));
 
-  /* 7 — FAQ */
-  fill('faqList', [
-    ['What do I need to get started?',
-     'A listing URL is enough. AVENORA resolves the address, matches it against official registries and begins the analysis automatically — no forms, no manual data entry.'],
-    ['Where does the data come from?',
-     'Every report is assembled from official public registries, verified government datasets and licensed market intelligence. Each finding in the report carries its source.'],
-    ['How long does a report take?',
-     'Around thirty seconds. Records collection, market comparison and risk detection run in parallel, and the AI verdict is generated as soon as the last signal arrives.'],
-    ['Which locations are supported?',
-     'Coverage follows official registry availability and expands market by market. Paste a listing and AVENORA will tell you immediately whether that address is covered.'],
-    ['How much does a report cost?',
-     'Single reports are pay-as-you-go, and subscriptions cover regular use with saved history and comparisons included.'],
-    ['Are my reports saved?',
-     'Yes. Every analysis lands in your workspace automatically, so you can revisit, compare and search past reports without running them again.']
-  ].map(([q, a]) =>
-    `<div class="qa card glass">
-       <button type="button"><span>${q}</span><span class="plus"></span></button>
-       <div class="a"><div><p>${a}</p></div></div>
-     </div>`
-  ).join(''));
+    /* 6 — Workspace */
+    fill('work', t.work.map(([title, p], i) =>
+      `<div class="work card glass"><div class="icon">${svg([I.doc, I.layers, I.target][i])}</div>
+        <h3>${title}</h3><p>${p}</p></div>`
+    ).join(''));
+
+    /* 8 — FAQ */
+    fill('faqList', t.faq.map(([q, a]) =>
+      `<div class="qa card glass">
+         <button type="button"><span>${q}</span><span class="plus"></span></button>
+         <div class="a"><div><p>${a}</p></div></div>
+       </div>`
+    ).join(''));
+  };
+  renderContent();
 
   document.getElementById('faqList').addEventListener('click', e => {
     const btn = e.target.closest('button');
@@ -1258,31 +1468,40 @@
   });
 
   /* Reveal on scroll — cards stagger inside their container */
-  document.querySelectorAll('.grid-3, .sources, .stats-row, .steps, .layers, .faq').forEach(c => {
-    [...c.children].forEach((el, i) => {
-      el.classList.add('reveal');
-      el.style.transitionDelay = (i * 70) + 'ms';
-    });
-  });
   const obs = new IntersectionObserver(entries => {
     entries.forEach(en => {
       if (en.isIntersecting) { en.target.classList.add('in'); obs.unobserve(en.target); }
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-  document.querySelectorAll('.reveal, .timeline').forEach(el => obs.observe(el));
+
+  const wireReveal = (instant) => {
+    document.querySelectorAll('.grid-3, .sources, .stats-row, .steps, .layers, .faq').forEach(c => {
+      [...c.children].forEach((el, i) => {
+        el.classList.add('reveal');
+        el.style.transitionDelay = (i * 70) + 'ms';
+        // after a language switch the section is already on screen — showing it
+        // outright avoids replaying the entrance under the user's cursor
+        if (instant) el.classList.add('in');
+      });
+    });
+    document.querySelectorAll('.reveal, .timeline').forEach(el => {
+      if (!el.classList.contains('in')) obs.observe(el);
+    });
+  };
+  wireReveal(false);
 
   /* Rail: punch the card spans out of the line, and time each card's flash to
      the moment the pulse is travelling underneath it. Both derive from measured
      geometry, so they stay correct at any width. */
   const rail = document.querySelector('.rail');
-  const stepEls = [...document.getElementById('steps').children];
   const CYCLE = 6000, PEAK = 0.05; // must match the CSS animation duration
 
   const layoutRail = () => {
     const rb = rail.getBoundingClientRect();
     if (!rb.width) return;
     const stops = [];
-    stepEls.forEach(s => {
+    // re-queried each run: the cards are rebuilt on every language switch
+    [...document.getElementById('steps').children].forEach(s => {
       const b = s.getBoundingClientRect();
       const l = (b.left - rb.left) / rb.width * 100;
       const r = (b.right - rb.left) / rb.width * 100;
@@ -1299,6 +1518,42 @@
   layoutRail();
   addEventListener('resize', layoutRail);
 
+  document.addEventListener('langchange', () => {
+    renderContent();
+    wireReveal(true);
+    layoutRail();
+  });
+})();
+
+/* ---------- language switching ---------- */
+(() => {
+  const apply = () => {
+    const t = T[LANG];
+    document.documentElement.lang = LANG;
+    document.title = t['meta.title'];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const v = t[el.dataset.i18n];
+      if (v != null) el.innerHTML = v;
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const v = t[el.dataset.i18nPlaceholder];
+      if (v != null) el.placeholder = v;
+    });
+    document.querySelectorAll('#lang button').forEach(b =>
+      b.classList.toggle('on', b.dataset.lang === LANG));
+  };
+
+  apply();
+
+  document.getElementById('lang').addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn || btn.dataset.lang === LANG) return;
+    window.LANG = btn.dataset.lang;
+    try { localStorage.setItem('avenora.lang', LANG); } catch {}
+    apply();
+    // the generated sections live in the script above — let it rebuild itself
+    document.dispatchEvent(new Event('langchange'));
+  });
 })();
 </script>
 
