@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVENOR — Understand Any Property Before You Buy</title>
+<title>AVENORA — Understand Any Property Before You Buy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
@@ -84,6 +84,8 @@
     font-size: 13px; font-weight: 400;
     letter-spacing: 0.26em;
   }
+  /* a domain reads as one word — the wordmark's wide tracking breaks it apart */
+  .brand span.domain { letter-spacing: 0.02em; font-size: 13.5px; }
   .nav-links { display: flex; align-items: center; gap: 4px; }
   .nav-links a {
     color: rgba(255, 255, 255, 0.62);
@@ -754,7 +756,7 @@
       <path d="M-10.5,7.5 L-3.6,-5.0 L-1.6,0.2 L-5,7.5 Z" />
       <path d="M0,3.5 L1.6,7.2 L-1.6,7.2 Z" />
     </svg>
-    <span>AVENOR</span>
+    <span class="domain">avenora.pl</span>
   </div>
   <div class="nav-links">
     <a href="#">Solutions</a>
@@ -886,9 +888,9 @@
   <section>
     <div class="sec-head reveal">
       <span class="eyebrow">How it works</span>
-      <h2>Behind Every<br><span class="accent">AVENOR Report.</span></h2>
+      <h2>Behind Every<br><span class="accent">AVENORA Report.</span></h2>
       <p class="sec-sub">From a single property address to hundreds of analyzed data points,
-        AVENOR transforms complex information into clear, actionable insights within seconds.</p>
+        AVENORA transforms complex information into clear, actionable insights within seconds.</p>
     </div>
     <div class="timeline reveal" id="timeline">
       <div class="rail"></div>
@@ -947,7 +949,7 @@
           <path d="M-10.5,7.5 L-3.6,-5.0 L-1.6,0.2 L-5,7.5 Z" />
           <path d="M0,3.5 L1.6,7.2 L-1.6,7.2 Z" />
         </svg>
-        <span>AVENOR</span>
+        <span>AVENORA</span>
       </div>
       <p class="foot-desc">Professional AI property intelligence platform.</p>
     </div>
@@ -964,7 +966,7 @@
       <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a>
     </div>
   </div>
-  <div class="foot-bottom reveal">© 2026 AVENOR</div>
+  <div class="foot-bottom reveal">© 2026 AVENORA</div>
 </footer>
 
 <script>
@@ -1142,13 +1144,13 @@
   /* 7 — FAQ */
   fill('faq', [
     ['What do I need to get started?',
-     'A listing URL is enough. AVENOR resolves the address, matches it against official registries and begins the analysis automatically — no forms, no manual data entry.'],
+     'A listing URL is enough. AVENORA resolves the address, matches it against official registries and begins the analysis automatically — no forms, no manual data entry.'],
     ['Where does the data come from?',
      'Every report is assembled from official public registries, verified government datasets and licensed market intelligence. Each finding in the report carries its source.'],
     ['How long does a report take?',
      'Around thirty seconds. Records collection, market comparison and risk detection run in parallel, and the AI verdict is generated as soon as the last signal arrives.'],
     ['Which locations are supported?',
-     'Coverage follows official registry availability and expands market by market. Paste a listing and AVENOR will tell you immediately whether that address is covered.'],
+     'Coverage follows official registry availability and expands market by market. Paste a listing and AVENORA will tell you immediately whether that address is covered.'],
     ['How much does a report cost?',
      'Single reports are pay-as-you-go, and subscriptions cover regular use with saved history and comparisons included.'],
     ['Are my reports saved?',
@@ -1255,7 +1257,7 @@ envTex.mapping = THREE.EquirectangularReflectionMapping;
 envTex.colorSpace = THREE.SRGBColorSpace;
 scene.environment = envTex;
 
-// --- AVENOR mark: right stroke with apex, cut left stroke, small accent ---
+// --- AVENORA mark: right stroke with apex, cut left stroke, small accent ---
 const rightStroke = new THREE.Shape([
   new THREE.Vector2(-0.205, 0.78),
   new THREE.Vector2(0, 1.15),
