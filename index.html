@@ -334,6 +334,10 @@
   .card {
     border-radius: 22px;
     overflow: hidden;
+    /* heavier frost than the base glass so content reads over the 3D scene */
+    background: rgba(255, 255, 255, 0.045);
+    backdrop-filter: blur(34px) saturate(180%);
+    -webkit-backdrop-filter: blur(34px) saturate(180%);
     transition: transform 380ms ease-out, border-color 380ms ease-out,
                 background 380ms ease-out, box-shadow 380ms ease-out;
   }
@@ -393,7 +397,7 @@
     transform: translateX(-100%);
   }
   /* linear is required: the card flashes below are timed off a constant pulse speed */
-  .timeline.in .rail::after { animation: rail 4.2s linear infinite; }
+  .timeline.in .rail::after { animation: rail 6s linear infinite; }
   @keyframes rail {
     0%   { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
@@ -414,7 +418,7 @@
   /* --flash is set per card in JS from its real position on the rail,
      so the glow peaks exactly while the pulse is hidden beneath it */
   .timeline.in .step::before {
-    animation: stepFlash 4.2s ease-in-out var(--flash, 0ms) infinite;
+    animation: stepFlash 6s ease-in-out var(--flash, 0ms) infinite;
   }
   @keyframes stepFlash {
     0%, 100% { opacity: 0; }
@@ -1016,7 +1020,7 @@
      geometry, so they stay correct at any width. */
   const rail = document.querySelector('.rail');
   const stepEls = [...document.getElementById('steps').children];
-  const CYCLE = 4200, PEAK = 0.05; // stepFlash peaks 5% into its own cycle
+  const CYCLE = 6000, PEAK = 0.05; // must match the CSS animation duration
 
   const layoutRail = () => {
     const rb = rail.getBoundingClientRect();
