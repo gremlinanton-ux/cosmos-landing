@@ -296,7 +296,9 @@
   .status .check { width: 12px; height: 12px; flex-shrink: 0; opacity: 0.85; }
 
   /* ---------- Sections ---------- */
-  main { position: relative; z-index: 5; }
+  /* overflow-x: clip contains the rail's overhang without making a scroll
+     container, so the line can bleed past the row and off the screen edge */
+  main { position: relative; z-index: 5; overflow-x: clip; }
   section {
     padding: 15vh 32px;
     max-width: 1180px;
@@ -370,10 +372,11 @@
 
   /* ---------- 2. Timeline ---------- */
   .timeline { position: relative; }
-  /* rail runs at card mid-height, drawn over the cards so it reads as one wire */
+  /* rail runs at card mid-height and overhangs the row on both sides.
+     JS masks out the card spans, so line and pulse only exist in the gaps */
   .rail {
     position: absolute;
-    top: 50%; left: 0; right: 0;
+    top: 50%; left: -8%; right: -8%;
     height: 1px;
     background: rgba(255, 255, 255, 0.1);
     overflow: hidden;
@@ -408,18 +411,16 @@
     opacity: 0;
     pointer-events: none;
   }
-  .timeline.in .step::before { animation: stepFlash 4.2s ease-in-out infinite; }
+  /* --flash is set per card in JS from its real position on the rail,
+     so the glow peaks exactly while the pulse is hidden beneath it */
+  .timeline.in .step::before {
+    animation: stepFlash 4.2s ease-in-out var(--flash, 0ms) infinite;
+  }
   @keyframes stepFlash {
     0%, 100% { opacity: 0; }
-    4%       { opacity: 1; }
-    16%      { opacity: 0; }
+    5%       { opacity: 1; }
+    10%      { opacity: 0; }
   }
-  /* pulse centre reaches card i at (p+0.5)/2 of the cycle; peak sits 168ms in */
-  .timeline.in .step:nth-child(1)::before { animation-delay: 1092ms; }
-  .timeline.in .step:nth-child(2)::before { animation-delay: 1512ms; }
-  .timeline.in .step:nth-child(3)::before { animation-delay: 1932ms; }
-  .timeline.in .step:nth-child(4)::before { animation-delay: 2352ms; }
-  .timeline.in .step:nth-child(5)::before { animation-delay: 2772ms; }
   .steps {
     position: relative;
     display: grid;
@@ -1009,6 +1010,34 @@
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal, .timeline').forEach(el => obs.observe(el));
+
+  /* Rail: punch the card spans out of the line, and time each card's flash to
+     the moment the pulse is travelling underneath it. Both derive from measured
+     geometry, so they stay correct at any width. */
+  const rail = document.querySelector('.rail');
+  const stepEls = [...document.getElementById('steps').children];
+  const CYCLE = 4200, PEAK = 0.05; // stepFlash peaks 5% into its own cycle
+
+  const layoutRail = () => {
+    const rb = rail.getBoundingClientRect();
+    if (!rb.width) return;
+    const stops = [];
+    stepEls.forEach(s => {
+      const b = s.getBoundingClientRect();
+      const l = (b.left - rb.left) / rb.width * 100;
+      const r = (b.right - rb.left) / rb.width * 100;
+      stops.push(`#000 ${l}%`, `transparent ${l}%`, `transparent ${r}%`, `#000 ${r}%`);
+      // the pulse centre sweeps -0.5w..1.5w over one cycle, so it sits over
+      // this card's centre at (q + 0.5) / 2 of the way through
+      const q = (b.left + b.width / 2 - rb.left) / rb.width;
+      s.style.setProperty('--flash', ((q + 0.5) / 2 - PEAK) * CYCLE + 'ms');
+    });
+    const mask = `linear-gradient(90deg, #000 0%, ${stops.join(',')}, #000 100%)`;
+    rail.style.webkitMaskImage = mask;
+    rail.style.maskImage = mask;
+  };
+  layoutRail();
+  addEventListener('resize', layoutRail);
 
   /* Widget parallax */
   const floats = [...document.querySelectorAll('.float')];
