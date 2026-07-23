@@ -451,69 +451,158 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
   }
-  .cat { padding: 30px 28px 32px; }
-  .cat .icon { margin-bottom: 22px; }
-  .cat ul { list-style: none; margin-top: 20px; }
-  .cat li {
+  .work { padding: 30px 28px 32px; display: flex; flex-direction: column; min-height: 210px; }
+  .work .icon { margin-bottom: auto; }
+  .work h3 { margin-top: 26px; }
+  .work p {
+    margin-top: 12px;
     font-size: 13.5px; font-weight: 300;
-    color: rgba(255, 255, 255, 0.48);
-    padding: 7px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.055);
-  }
-  .cat li:first-child { border-top: none; padding-top: 0; }
-
-  /* ---------- 4. Why ---------- */
-  .why { padding: 44px 36px 48px; min-height: 300px; display: flex; flex-direction: column; }
-  .why .icon { width: 46px; height: 46px; border-radius: 14px; margin-bottom: auto; }
-  .why h3 { font-size: 22px; font-weight: 300; margin-top: 34px; letter-spacing: -0.02em; }
-  .why p {
-    margin-top: 14px;
-    font-size: 14px; font-weight: 300;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.46);
+    color: rgba(255, 255, 255, 0.45);
   }
 
-  /* ---------- 5. Report widgets ---------- */
-  .widgets {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
-    align-items: start;
+  /* ---------- 2. Dashboard preview ---------- */
+  .dash { padding: 0; }
+  .dash-bar {
+    display: flex; align-items: center; gap: 4px;
+    padding: 13px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   }
-  .float { will-change: transform; }
-  .widget {
-    padding: 26px 26px 28px;
-    border-radius: 20px;
-    animation: bob 9s ease-in-out infinite;
+  .dash-bar .tab {
+    font-size: 12px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 6px 13px;
+    border-radius: 999px;
   }
-  @keyframes bob {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-9px); }
+  .dash-bar .tab.on {
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
   }
-  .widget .label {
-    font-size: 11.5px; font-weight: 300;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.36);
+  .dash-ref {
+    margin-left: auto;
+    font-size: 11px; font-weight: 300;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.3);
   }
-  .widget .value {
-    margin-top: 16px;
-    font-size: 34px; font-weight: 200;
-    letter-spacing: -0.035em;
-    line-height: 1;
+  .dash-body { padding: 20px; }
+  .dash-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .panel, .kpi {
+    border-radius: 16px;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
   }
-  .widget .value small {
-    font-size: 15px; font-weight: 300;
+  .kpi .label, .panel-head {
+    font-size: 11px; font-weight: 300;
+    letter-spacing: 0.13em; text-transform: uppercase;
     color: rgba(255, 255, 255, 0.34);
-    letter-spacing: -0.01em;
   }
-  .widget .bar {
-    margin-top: 20px; height: 2px;
-    background: rgba(255, 255, 255, 0.1);
+  .kpi .value {
+    margin-top: 12px;
+    font-size: clamp(1.4rem, 2.3vw, 1.85rem); font-weight: 200;
+    letter-spacing: -0.03em; line-height: 1;
+  }
+  .kpi .value small { font-size: 13px; color: rgba(255, 255, 255, 0.34); }
+  .kpi .bar, .meter i {
+    margin-top: 13px; height: 2px;
+    background: rgba(255, 255, 255, 0.09);
     border-radius: 2px; overflow: hidden;
   }
-  .widget .bar i { display: block; height: 100%; background: rgba(255, 255, 255, 0.7); border-radius: 2px; }
-  .years { margin-top: 18px; display: flex; flex-direction: column; gap: 2px; }
+  .kpi .bar i, .meter i b { display: block; height: 100%; background: rgba(255, 255, 255, 0.65); border-radius: 2px; }
+
+  .dash-grid { margin-top: 14px; display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; }
+  .panel-head { display: flex; align-items: baseline; justify-content: space-between; }
+  .panel-head .pos, .panel-head .muted { letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.5); }
+  .spark { width: 100%; height: 80px; margin-top: 14px; display: block; }
+  .spark .line { fill: none; stroke: rgba(255, 255, 255, 0.7); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .spark .fill { fill: rgba(255, 255, 255, 0.05); stroke: none; }
+  .panel-foot {
+    display: flex; justify-content: space-between; margin-top: 8px;
+    font-size: 10.5px; color: rgba(255, 255, 255, 0.26);
+  }
+  .meters { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
+  .meter { font-size: 12px; font-weight: 300; color: rgba(255, 255, 255, 0.5); }
+  .meter > span { display: flex; justify-content: space-between; }
+  /* <i> is inline by default, so height would collapse to 0 without this */
+  .meter i { display: block; position: relative; margin-top: 7px; }
+  .meter i b { position: absolute; inset: 0 auto 0 0; }
+  .insights { list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .insights li {
+    display: flex; gap: 10px;
+    font-size: 12.5px; font-weight: 300; line-height: 1.45;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .insights li::before {
+    content: ''; flex-shrink: 0;
+    width: 4px; height: 4px; margin-top: 7px;
+    border-radius: 50%; background: rgba(255, 255, 255, 0.42);
+  }
+
+  /* ---------- 3. Verified data ---------- */
+  .split { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 56px; align-items: center; }
+  .split-h2 {
+    font-size: clamp(1.85rem, 3.3vw, 2.85rem);
+    font-weight: 200; line-height: 1.14; letter-spacing: -0.03em;
+  }
+  .split-h2 .accent { font-weight: 400; }
+  .split-p {
+    margin-top: 20px; max-width: 42ch;
+    font-size: 14px; font-weight: 300; line-height: 1.65;
+    color: rgba(255, 255, 255, 0.45);
+  }
+  .ghost-btn {
+    display: inline-block; margin-top: 28px;
+    padding: 12px 22px; border-radius: 999px;
+    font-size: 13px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.85); text-decoration: none;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transition: background 280ms ease-out, border-color 280ms ease-out, color 280ms ease-out;
+  }
+  .ghost-btn:hover { background: rgba(255, 255, 255, 0.09); border-color: rgba(255, 255, 255, 0.24); color: #fff; }
+  .sources { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .source.key {
+    background: rgba(255, 255, 255, 0.075);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 40px rgba(255, 255, 255, 0.06);
+  }
+  /* glass panel keeps the figures legible where the 3D scene runs bright behind */
+  .stats-row {
+    margin-top: 8vh;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+    padding: 34px 28px;
+    border-radius: 22px;
+  }
+  .stat { text-align: center; }
+  .stat .n { font-size: clamp(1.55rem, 2.5vw, 2.15rem); font-weight: 200; letter-spacing: -0.03em; }
+  .stat .t { margin-top: 8px; font-size: 12px; font-weight: 300; color: rgba(255, 255, 255, 0.36); }
+
+  /* ---------- 5. Neighborhood map (placeholder) ---------- */
+  .layers { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 26px; }
+  .map-slot {
+    height: 420px;
+    display: flex; align-items: center; justify-content: center;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .map-note { text-align: center; }
+  .map-title { display: block; font-size: 15px; font-weight: 300; color: rgba(255, 255, 255, 0.5); }
+  .map-sub {
+    display: block; margin-top: 9px;
+    font-size: 11px; font-weight: 300;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.26);
+  }
+
+  .years { margin-top: 15px; display: flex; flex-direction: column; gap: 2px; }
+  .years em {
+    font-style: normal; margin-left: auto;
+    font-size: 11.5px; color: rgba(255, 255, 255, 0.3);
+  }
   .years div {
     display: flex; align-items: center; gap: 12px;
     font-size: 15px; font-weight: 300;
@@ -525,8 +614,7 @@
   }
   .years span { width: 1px; height: 14px; margin-left: 2px; background: rgba(255, 255, 255, 0.16); }
 
-  /* ---------- 6. Sources ---------- */
-  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  /* ---------- Source tiles ---------- */
   .source {
     padding: 28px 20px;
     display: flex; flex-direction: column; align-items: center; gap: 16px;
@@ -594,8 +682,8 @@
     max-width: 1180px; margin: 0 auto;
     padding: 9vh 32px 0;
     display: grid;
-    grid-template-columns: 1.6fr 1fr 1fr;
-    gap: 48px;
+    grid-template-columns: 1.7fr 1fr 1fr 1fr;
+    gap: 42px;
   }
   .foot-in .brand svg { width: 16px; height: 16px; }
   .foot-in .brand span { font-size: 12.5px; }
@@ -634,8 +722,9 @@
     /* grid reflows to 2 columns — the pulse timing no longer maps to card positions */
     .rail { display: none; }
     .timeline.in .step::before { animation: none; }
-    .grid-3, .widgets { grid-template-columns: repeat(2, 1fr); }
-    .grid-4 { grid-template-columns: repeat(3, 1fr); }
+    .grid-3, .sources, .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .split { grid-template-columns: 1fr; gap: 40px; }
+    .dash-grid { grid-template-columns: 1fr; }
     .foot-in { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 860px) {
@@ -647,8 +736,9 @@
     section { padding: 11vh 22px; }
   }
   @media (max-width: 640px) {
-    .steps, .grid-3, .widgets { grid-template-columns: 1fr; }
-    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .steps, .grid-3 { grid-template-columns: 1fr; }
+    .sources, .dash-kpis { grid-template-columns: repeat(2, 1fr); }
+    .map-slot { height: 300px; }
     .foot-in { grid-template-columns: 1fr; gap: 36px; }
   }
 </style>
@@ -720,11 +810,85 @@
 </div>
 
 <main>
-  <!-- 2. How it works -->
+  <!-- 2. PROPERTY REPORT -->
   <section>
     <div class="sec-head reveal">
-      <span class="eyebrow">How AVENOR works</span>
-      <h2>How AI Investigates<br><span class="accent">Every Property</span></h2>
+      <span class="eyebrow">Property report</span>
+      <h2>Discover Every<br><span class="accent">Property Insight.</span></h2>
+      <p class="sec-sub">Get a complete AI-powered property report in seconds. Explore market
+        trends, investment potential, neighborhood intelligence, and every factor that
+        influences your decision—all in one place.</p>
+    </div>
+
+    <div class="dash card glass reveal">
+      <div class="dash-bar">
+        <span class="tab on">Overview</span>
+        <span class="tab">Records</span>
+        <span class="tab">Market</span>
+        <span class="tab">Neighborhood</span>
+        <span class="tab">Risks</span>
+        <span class="dash-ref">Report A-4821</span>
+      </div>
+
+      <div class="dash-body">
+        <div class="dash-kpis" id="dashKpis"></div>
+
+        <div class="dash-grid">
+          <div class="panel">
+            <div class="panel-head"><span>Price history</span><span class="pos">+18.4%</span></div>
+            <svg class="spark" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true">
+              <path class="fill" d="M0,72 L38,66 L76,69 L114,52 L152,56 L190,38 L228,30 L266,22 L300,14 L300,90 L0,90 Z" />
+              <path class="line" d="M0,72 L38,66 L76,69 L114,52 L152,56 L190,38 L228,30 L266,22 L300,14" />
+            </svg>
+            <div class="panel-foot"><span>2019</span><span>2022</span><span>2025</span></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><span>Neighborhood</span><span class="muted">Excellent</span></div>
+            <div class="meters" id="dashMeters"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><span>Ownership timeline</span></div>
+            <div class="years">
+              <div>2011<em>Purchased</em></div><span></span>
+              <div>2018<em>Renovated</em></div><span></span>
+              <div>2025<em>Listed</em></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><span>Key insights</span></div>
+            <ul class="insights" id="dashInsights"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. VERIFIED DATA -->
+  <section>
+    <div class="split">
+      <div class="reveal">
+        <span class="eyebrow">Verified data</span>
+        <h2 class="split-h2">Trusted Data.<br><span class="accent">Smarter Decisions.</span></h2>
+        <p class="split-p">Every report is built from reliable public records, official datasets,
+          and continuously updated market information to help users make confident property
+          decisions.</p>
+        <a href="#" class="ghost-btn">Learn more about our data ↗</a>
+      </div>
+      <div class="sources" id="sources"></div>
+    </div>
+    <div class="stats-row card glass reveal" id="stats"></div>
+  </section>
+
+  <!-- 4. HOW IT WORKS — the original timeline, kept as-is -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="eyebrow">How it works</span>
+      <h2>Behind Every<br><span class="accent">AVENOR Report.</span></h2>
+      <p class="sec-sub">From a single property address to hundreds of analyzed data points,
+        AVENOR transforms complex information into clear, actionable insights within seconds.</p>
     </div>
     <div class="timeline reveal" id="timeline">
       <div class="rail"></div>
@@ -732,47 +896,43 @@
     </div>
   </section>
 
-  <!-- 3. Everything we analyze -->
+  <!-- 5. NEIGHBORHOOD INTELLIGENCE — map deferred, placeholder only -->
   <section>
     <div class="sec-head reveal">
-      <span class="eyebrow">Everything we analyze</span>
-      <h2>Everything You Need.<br><span class="accent">Nothing Hidden.</span></h2>
+      <span class="eyebrow">Neighborhood intelligence</span>
+      <h2>Everything Beyond<br><span class="accent">The Front Door.</span></h2>
+      <p class="sec-sub">A property is only part of the story. Explore crime, schools, transport,
+        healthcare, green spaces, investment potential, and other neighborhood insights before
+        making a decision.</p>
     </div>
-    <div class="grid-3" id="cats"></div>
+    <div class="reveal">
+      <div class="layers" id="layers"></div>
+      <div class="map-slot card glass">
+        <div class="map-note">
+          <span class="map-title">Interactive map</span>
+          <span class="map-sub">In development</span>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- 4. Why AVENOR -->
+  <!-- 6. YOUR WORKSPACE -->
   <section>
     <div class="sec-head reveal">
-      <span class="eyebrow">Why AVENOR</span>
-      <h2>Built for Smarter<br><span class="accent">Property Decisions</span></h2>
+      <span class="eyebrow">Your workspace</span>
+      <h2>Save, Compare<br><span class="accent">&amp; Decide.</span></h2>
+      <p class="sec-sub">Every analysis is automatically saved to your workspace. Access previous
+        reports, compare properties, search through your analysis history, and continue your
+        research at any time.</p>
     </div>
-    <div class="grid-3" id="why"></div>
-  </section>
-
-  <!-- 5. Report preview -->
-  <section>
-    <div class="sec-head reveal">
-      <span class="eyebrow">Report preview</span>
-      <h2>Professional Report.<br><span class="accent">Generated in Seconds.</span></h2>
-    </div>
-    <div class="widgets" id="widgets"></div>
-  </section>
-
-  <!-- 6. Data sources -->
-  <section>
-    <div class="sec-head reveal">
-      <span class="eyebrow">Trusted data sources</span>
-      <h2>Powered by <span class="accent">Trusted Data</span></h2>
-    </div>
-    <div class="grid-4" id="sources"></div>
+    <div class="grid-3" id="work"></div>
   </section>
 
   <!-- 7. FAQ -->
   <section>
     <div class="sec-head reveal">
       <span class="eyebrow">FAQ</span>
-      <h2>Frequently Asked <span class="accent">Questions</span></h2>
+      <h2>Everything You<br><span class="accent">Need To Know.</span></h2>
     </div>
     <div class="faq" id="faq"></div>
   </section>
@@ -796,8 +956,12 @@
       <a href="#">Solutions</a><a href="#">Pricing</a><a href="#">API</a><a href="#">Blog</a>
     </div>
     <div class="foot-col reveal">
+      <h4>Contact</h4>
+      <a href="#">Support</a><a href="#">Sales</a><a href="#">Press</a>
+    </div>
+    <div class="foot-col reveal">
       <h4>Legal</h4>
-      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a>
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a>
     </div>
   </div>
   <div class="foot-bottom reveal">© 2026 AVENOR</div>
@@ -911,7 +1075,31 @@
 
   const fill = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
 
-  /* 2 — Timeline */
+  /* 2 — Dashboard preview */
+  fill('dashKpis', [
+    ['Risk Score', '87 <small>/ 100</small>', 87],
+    ['Estimated Value', '€423,000', 64],
+    ['Investment Rating', 'Strong Buy', 78]
+  ].map(([l, v, w]) =>
+    `<div class="kpi"><div class="label">${l}</div><div class="value">${v}</div>
+      <div class="bar"><i style="width:${w}%"></i></div></div>`
+  ).join(''));
+
+  fill('dashMeters', [
+    ['Safety', 92], ['Schools', 86], ['Transport', 78], ['Green spaces', 71]
+  ].map(([t, v]) =>
+    `<div class="meter"><span>${t}<em style="font-style:normal">${v}</em></span>
+      <i><b style="width:${v}%"></b></i></div>`
+  ).join(''));
+
+  fill('dashInsights', [
+    'Priced 6% below comparable sales on the same street.',
+    'No outstanding charges or restrictions on the title.',
+    'Rental demand in this district rose 12% year over year.',
+    'Energy rating B — below-average running costs.'
+  ].map(t => `<li>${t}</li>`).join(''));
+
+  /* 4 — Timeline (unchanged) */
   fill('steps', [
     ['Paste Property URL', I.link],
     ['Collect Official Records', I.doc],
@@ -923,56 +1111,32 @@
       <div><div class="n">STEP ${i + 1}</div><h3>${t}</h3></div></div>`
   ).join(''));
 
-  /* 3 — Everything we analyze */
-  fill('cats', [
-    ['Official Records', I.doc,   ['Ownership History', 'Mortgages', 'Permits', 'Restrictions']],
-    ['Neighborhood',     I.pin,   ['Crime', 'Schools', 'Transport', 'Healthcare', 'Noise']],
-    ['Market',           I.chart, ['Price History', 'Comparable Sales', 'Market Trends', 'Demand', 'Forecast']],
-    ['Investment',       I.coins, ['Rental Yield', 'ROI', 'Cash Flow', 'Investment Score']],
-    ['Property',         I.home,  ['Construction', 'Energy Rating', 'Technical Condition', 'Renovation History']],
-    ['AI Verdict',       I.cpu,   ['Overall Score', 'Strengths', 'Weaknesses', 'Recommendation']]
-  ].map(([t, ic, items]) =>
-    `<div class="cat card glass"><div class="icon">${svg(ic)}</div><h3>${t}</h3>
-      <ul>${items.map(x => `<li>${x}</li>`).join('')}</ul></div>`
-  ).join(''));
-
-  /* 4 — Why AVENOR */
-  fill('why', [
-    ['Official Data', I.verified, 'Built from trusted public records and verified datasets.'],
-    ['AI Intelligence', I.cpu, 'Thousands of signals transformed into one professional report.'],
-    ['Decision Confidence', I.target, 'Understand risks before making expensive decisions.']
-  ].map(([t, ic, p]) =>
-    `<div class="why card glass"><div class="icon">${svg(ic)}</div><h3>${t}</h3><p>${p}</p></div>`
-  ).join(''));
-
-  /* 5 — Report widgets */
-  const widget = (inner, speed, delay) =>
-    `<div class="float" data-speed="${speed}">
-       <div class="widget card glass" style="animation-delay:${delay}s">${inner}</div>
-     </div>`;
-  fill('widgets', [
-    widget('<div class="label">Risk Score</div><div class="value">87 <small>/ 100</small></div>' +
-           '<div class="bar"><i style="width:87%"></i></div>', 0.055, 0),
-    widget('<div class="label">Property Value</div><div class="value">€423,000</div>' +
-           '<div class="bar"><i style="width:64%"></i></div>', 0.10, 1.4),
-    widget('<div class="label">Neighborhood</div><div class="value">Excellent</div>' +
-           '<div class="bar"><i style="width:92%"></i></div>', 0.03, 2.6),
-    widget('<div class="label">Investment Rating</div><div class="value">Strong Buy</div>' +
-           '<div class="bar"><i style="width:78%"></i></div>', 0.09, 0.7),
-    widget('<div class="label">Ownership Timeline</div>' +
-           '<div class="years"><div>2011</div><span></span><div>2018</div><span></span><div>2025</div></div>', 0.045, 3.3),
-    widget('<div class="label">Data Points Analyzed</div><div class="value">2,481</div>' +
-           '<div class="bar"><i style="width:100%"></i></div>', 0.075, 2.0)
-  ].join(''));
-
-  /* 6 — Sources */
+  /* 3 — Verified data: sources feed the AI processing tile in the middle */
   fill('sources', [
-    ['Official Records', I.doc], ['Government Data', I.bank],
-    ['Land Registry', I.book], ['Market Intelligence', I.layers],
-    ['Transport', I.bus], ['Schools', I.cap],
-    ['Satellite Maps', I.globe], ['Energy Certificates', I.bolt]
-  ].map(([t, ic]) =>
-    `<div class="source card glass"><div class="icon">${svg(ic)}</div><span>${t}</span></div>`
+    ['Government Records', I.bank], ['Land Registry', I.book],
+    ['Market Analytics', I.chart], ['AI Processing', I.cpu, true],
+    ['Satellite Imagery', I.globe], ['Transport Data', I.bus],
+    ['Demographics', I.cap], ['Energy Certificates', I.bolt]
+  ].map(([t, ic, key]) =>
+    `<div class="source card glass${key ? ' key' : ''}"><div class="icon">${svg(ic)}</div><span>${t}</span></div>`
+  ).join(''));
+
+  fill('stats', [
+    ['250+', 'Data Sources'], ['2,481', 'Signals Analyzed'],
+    ['30 sec', 'Average Report Time'], ['96%', 'AI Confidence']
+  ].map(([n, t]) => `<div class="stat"><div class="n">${n}</div><div class="t">${t}</div></div>`).join(''));
+
+  /* 5 — Neighborhood layers (map itself is deferred) */
+  fill('layers', ['Crime', 'Schools', 'Transport', 'Healthcare', 'Green Spaces', 'Investment']
+    .map(t => `<div class="chip glass">${t}</div>`).join(''));
+
+  /* 6 — Workspace */
+  fill('work', [
+    ['Report History', I.doc, 'Every analysis is saved automatically. Return to any property you have looked at, at any time.'],
+    ['Compare Properties', I.layers, 'Put reports side by side and see which property actually holds up on the numbers.'],
+    ['Search Your Analyses', I.target, 'Find any past report by address, date or score without digging through files.']
+  ].map(([t, ic, p]) =>
+    `<div class="work card glass"><div class="icon">${svg(ic)}</div><h3>${t}</h3><p>${p}</p></div>`
   ).join(''));
 
   /* 7 — FAQ */
@@ -982,13 +1146,13 @@
     ['Where does the data come from?',
      'Every report is assembled from official public registries, verified government datasets and licensed market intelligence. Each finding in the report carries its source.'],
     ['How long does a report take?',
-     'Seconds. Records collection, market comparison and risk detection run in parallel, and the AI verdict is generated as soon as the last signal arrives.'],
-    ['How accurate is the AI valuation?',
-     'Valuations are built from comparable sales, price history and current demand, and are always presented with a confidence range rather than a single number.'],
-    ['Can I use AVENOR for investment analysis?',
-     'Yes. Every report includes rental yield, ROI, projected cash flow and a composite investment score alongside the risk assessment.'],
-    ['Do you offer an API?',
-     'Yes. The same intelligence that powers a report is available programmatically for portfolio monitoring and high-volume screening.']
+     'Around thirty seconds. Records collection, market comparison and risk detection run in parallel, and the AI verdict is generated as soon as the last signal arrives.'],
+    ['Which locations are supported?',
+     'Coverage follows official registry availability and expands market by market. Paste a listing and AVENOR will tell you immediately whether that address is covered.'],
+    ['How much does a report cost?',
+     'Single reports are pay-as-you-go, and subscriptions cover regular use with saved history and comparisons included.'],
+    ['Are my reports saved?',
+     'Yes. Every analysis lands in your workspace automatically, so you can revisit, compare and search past reports without running them again.']
   ].map(([q, a]) =>
     `<div class="qa card glass">
        <button type="button"><span>${q}</span><span class="plus"></span></button>
@@ -1002,7 +1166,7 @@
   });
 
   /* Reveal on scroll — cards stagger inside their container */
-  document.querySelectorAll('.grid-3, .grid-4, .steps, .widgets, .faq').forEach(c => {
+  document.querySelectorAll('.grid-3, .sources, .stats-row, .steps, .layers, .faq').forEach(c => {
     [...c.children].forEach((el, i) => {
       el.classList.add('reveal');
       el.style.transitionDelay = (i * 70) + 'ms';
@@ -1043,21 +1207,6 @@
   layoutRail();
   addEventListener('resize', layoutRail);
 
-  /* Widget parallax */
-  const floats = [...document.querySelectorAll('.float')];
-  let ticking = false;
-  const parallax = () => {
-    const mid = innerHeight / 2;
-    floats.forEach(f => {
-      const b = f.getBoundingClientRect();
-      f.style.transform = `translateY(${(b.top + b.height / 2 - mid) * -f.dataset.speed}px)`;
-    });
-    ticking = false;
-  };
-  addEventListener('scroll', () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(parallax); }
-  }, { passive: true });
-  parallax();
 })();
 </script>
 
