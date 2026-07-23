@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200..600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { height: 100%; }
+  html { height: 100%; scroll-behavior: smooth; }
   body { min-height: 100%; background: #000; overflow-x: hidden; }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -334,6 +334,8 @@
     padding: 15vh 32px;
     max-width: 1180px;
     margin: 0 auto;
+    /* clears the fixed nav (24px top + 60px tall) when jumped to by anchor */
+    scroll-margin-top: 96px;
   }
   .sec-head { text-align: center; margin-bottom: 8vh; }
   .sec-head h2 {
@@ -797,10 +799,11 @@
     <span class="domain">AVENORA.PL</span>
   </div>
   <div class="nav-links">
-    <a href="#">Solutions</a>
-    <a href="#">Pricing</a>
-    <a href="#">API</a>
-    <a href="#">Blog</a>
+    <a href="#report">Report</a>
+    <a href="#data">Data</a>
+    <a href="#how">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
   </div>
   <div class="nav-right"><a href="#" class="signin">Sign In</a></div>
 </nav>
@@ -851,7 +854,7 @@
 
 <main>
   <!-- 2. PROPERTY REPORT -->
-  <section>
+  <section id="report">
     <div class="sec-head reveal">
       <span class="eyebrow">Property report</span>
       <h2>Discover Every<br><span class="accent">Property Insight.</span></h2>
@@ -907,7 +910,7 @@
   </section>
 
   <!-- 3. VERIFIED DATA -->
-  <section>
+  <section id="data">
     <div class="split">
       <div class="reveal">
         <span class="eyebrow">Verified data</span>
@@ -923,7 +926,7 @@
   </section>
 
   <!-- 4. HOW IT WORKS — the original timeline, kept as-is -->
-  <section>
+  <section id="how">
     <div class="sec-head reveal">
       <span class="eyebrow">How it works</span>
       <h2>Behind Every<br><span class="accent">AVENORA Report.</span></h2>
@@ -937,7 +940,7 @@
   </section>
 
   <!-- 5. NEIGHBORHOOD INTELLIGENCE — map deferred, placeholder only -->
-  <section>
+  <section id="neighborhood">
     <div class="sec-head reveal">
       <span class="eyebrow">Neighborhood intelligence</span>
       <h2>Everything Beyond<br><span class="accent">The Front Door.</span></h2>
@@ -957,7 +960,7 @@
   </section>
 
   <!-- 6. YOUR WORKSPACE -->
-  <section>
+  <section id="workspace">
     <div class="sec-head reveal">
       <span class="eyebrow">Your workspace</span>
       <h2>Save, Compare<br><span class="accent">&amp; Decide.</span></h2>
@@ -969,12 +972,12 @@
   </section>
 
   <!-- 7. FAQ -->
-  <section>
+  <section id="faq">
     <div class="sec-head reveal">
       <span class="eyebrow">FAQ</span>
       <h2>Everything You<br><span class="accent">Need To Know.</span></h2>
     </div>
-    <div class="faq" id="faq"></div>
+    <div class="faq" id="faqList"></div>
   </section>
 </main>
 
@@ -993,7 +996,8 @@
     </div>
     <div class="foot-col reveal">
       <h4>Navigation</h4>
-      <a href="#">Solutions</a><a href="#">Pricing</a><a href="#">API</a><a href="#">Blog</a>
+      <a href="#report">Report</a><a href="#data">Data</a><a href="#how">How It Works</a>
+      <a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
     </div>
     <div class="foot-col reveal">
       <h4>Contact</h4>
@@ -1180,7 +1184,7 @@
   ).join(''));
 
   /* 7 — FAQ */
-  fill('faq', [
+  fill('faqList', [
     ['What do I need to get started?',
      'A listing URL is enough. AVENORA resolves the address, matches it against official registries and begins the analysis automatically — no forms, no manual data entry.'],
     ['Where does the data come from?',
@@ -1200,7 +1204,7 @@
      </div>`
   ).join(''));
 
-  document.getElementById('faq').addEventListener('click', e => {
+  document.getElementById('faqList').addEventListener('click', e => {
     const btn = e.target.closest('button');
     if (btn) btn.parentElement.classList.toggle('open');
   });
