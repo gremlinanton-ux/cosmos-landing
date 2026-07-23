@@ -323,8 +323,13 @@
 
   /* ---------- Sections ---------- */
   /* overflow-x: clip contains the rail's overhang without making a scroll
-     container, so the line can bleed past the row and off the screen edge */
-  main { position: relative; z-index: 5; overflow-x: clip; }
+     container, so the line can bleed past the row and off the screen edge.
+     pointer-events: none keeps the gutters between blocks transparent to the
+     cursor, so the 3D scene stays draggable the whole way down the page —
+     the property inherits, so only the leaves below need it back. */
+  main { position: relative; z-index: 5; overflow-x: clip; pointer-events: none; }
+  main .card, main .chip, main .ghost-btn, main .sec-head,
+  main a, main button, main input { pointer-events: auto; }
   section {
     padding: 15vh 32px;
     max-width: 1180px;
