@@ -621,6 +621,34 @@
   .stat .n { font-size: clamp(1.55rem, 2.5vw, 2.15rem); font-weight: 200; letter-spacing: -0.03em; }
   .stat .t { margin-top: 8px; font-size: 12px; font-weight: 300; color: rgba(255, 255, 255, 0.36); }
 
+  /* ---------- 7. Pricing ---------- */
+  .pricing-panel {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 50px 56px 54px;
+    border-radius: 24px;
+  }
+  .pricing-panel p {
+    font-size: 14.5px; font-weight: 300;
+    line-height: 1.75;
+    letter-spacing: -0.004em;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .pricing-panel p + p { margin-top: 20px; }
+  /* namespaced: a bare .lead is already the search field's paste button */
+  .pricing-panel .pricing-lead {
+    font-size: 19px; font-weight: 300;
+    line-height: 1.55;
+    letter-spacing: -0.018em;
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .pricing-panel .pricing-close {
+    margin-top: 30px;
+    padding-top: 26px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.72);
+  }
+
   /* ---------- 5. Neighborhood map (placeholder) ---------- */
   .layers { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 26px; }
   .map-slot {
@@ -781,6 +809,7 @@
     .steps, .grid-3 { grid-template-columns: 1fr; }
     .sources, .dash-kpis { grid-template-columns: repeat(2, 1fr); }
     .map-slot { height: 300px; }
+    .pricing-panel { padding: 34px 26px 38px; }
     .foot-in { grid-template-columns: 1fr; gap: 36px; }
   }
 </style>
@@ -971,7 +1000,26 @@
     <div class="grid-3" id="work"></div>
   </section>
 
-  <!-- 7. FAQ -->
+  <!-- 7. PRICING -->
+  <section id="pricing">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Pricing</span>
+      <h2>Early Access.<br><span class="accent">Free For Everyone.</span></h2>
+    </div>
+    <div class="pricing-panel card glass reveal">
+      <p class="pricing-lead">We&rsquo;re currently in Early Access, so every feature is available 100% free.</p>
+      <p>Our focus right now isn&rsquo;t revenue&mdash;it&rsquo;s building the best AI real estate
+        platform with feedback from our first users. Every conversation, suggestion, and report
+        helps us improve the product.</p>
+      <p>As our community grows and new premium features are introduced, paid plans will become
+        available. Early users will receive priority access and exclusive benefits when pricing
+        launches.</p>
+      <p class="pricing-close">Join now while it&rsquo;s free and help shape the future of AI-powered
+        real estate.</p>
+    </div>
+  </section>
+
+  <!-- 8. FAQ -->
   <section id="faq">
     <div class="sec-head reveal">
       <span class="eyebrow">FAQ</span>
