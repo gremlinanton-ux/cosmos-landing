@@ -238,8 +238,12 @@
     opacity: 0;
     filter: blur(8px);
     transform: translateY(8px);
-    transition: opacity 520ms ease-out, filter 520ms ease-out,
-                transform 520ms ease-out, color 300ms ease-out;
+    /* the cascade delay rides on --d so it never reaches `color`,
+       otherwise hover would lag by up to the chip's stagger offset */
+    transition: opacity 520ms ease-out var(--d, 0ms),
+                filter 520ms ease-out var(--d, 0ms),
+                transform 520ms ease-out var(--d, 0ms),
+                color 300ms ease-out;
   }
   .row.ready > .chip { opacity: 1; filter: blur(0); transform: none; }
   .row.hidden > .chip {
@@ -253,7 +257,10 @@
     position: absolute; top: 0;
     width: min(720px, 100%);
     display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+    /* read-only indicators — must never steal hover from the chips underneath */
+    pointer-events: none;
   }
+  .status .chip { pointer-events: none; }
   .status .chip {
     display: inline-flex; align-items: center; gap: 8px;
     opacity: 0;
@@ -751,8 +758,9 @@
   const chips = [...row.children].filter(el => el.classList.contains('chip'));
   let timer = null, shown = 0;
 
-  // stagger each static chip; entering is slower and airier than leaving
-  const stagger = step => chips.forEach((c, i) => c.style.transitionDelay = i * step + 'ms');
+  // stagger each static chip; entering is slower and airier than leaving.
+  // --d only feeds the opacity/filter/transform delays, so hover stays instant
+  const stagger = step => chips.forEach((c, i) => c.style.setProperty('--d', i * step + 'ms'));
 
   stagger(70);
   // double rAF: the first frame must actually paint the hidden state,
