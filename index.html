@@ -989,6 +989,32 @@
   }
   .modal-foot button:hover { border-color: #fff; }
 
+  /* confirmation state */
+  #sentView[hidden] { display: none; }
+  .sent-icon {
+    width: 54px; height: 54px;
+    margin: 6px auto 0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  }
+  .sent-icon svg { width: 23px; height: 23px; }
+  #sentBody { margin-top: 12px; }
+  #sentBody b { font-weight: 400; color: rgba(255, 255, 255, 0.92); }
+  .sent-spam {
+    margin-top: 18px;
+    font-size: 12px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.34);
+  }
+  #resendBtn:disabled {
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: default;
+  }
+
   @media (max-width: 1000px) {
     .steps { grid-template-columns: repeat(2, 1fr); }
     /* grid reflows to 2 columns — the pulse timing no longer maps to card positions */
@@ -1273,6 +1299,7 @@
       <path d="M0,3.5 L1.6,7.2 L-1.6,7.2 Z" />
     </svg>
 
+    <div id="authView">
     <h2 id="authTitle">Sign in to AVENORA</h2>
     <p class="modal-sub" id="authSub">Return to your saved reports.</p>
 
@@ -1317,6 +1344,23 @@
       <span id="authAlt">Don’t have an account?</span>
       <button type="button" id="authToggle">Create one</button>
     </p>
+    </div>
+
+    <div id="sentView" hidden>
+      <div class="sent-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
+          <path d="M3.5 7.5L12 13l8.5-5.5" />
+        </svg>
+      </div>
+      <h2 id="sentTitle">Check your inbox</h2>
+      <p class="modal-sub" id="sentBody"></p>
+      <p class="sent-spam" id="sentSpam"></p>
+      <button class="auth-submit" type="button" id="resendBtn"></button>
+      <p class="modal-foot">
+        <button type="button" id="changeEmail"></button>
+      </p>
+    </div>
   </div>
 </div>
 
@@ -1408,7 +1452,12 @@ window.T = {
     'pw.0': 'Za słabe', 'pw.1': 'Słabe', 'pw.2': 'Średnie', 'pw.3': 'Dobre', 'pw.4': 'Silne',
     'pw.need': 'Brakuje:',
     'req.len': 'co najmniej 8 znaków', 'req.case': 'wielka i mała litera',
-    'req.digit': 'cyfra', 'req.symbol': 'znak specjalny'
+    'req.digit': 'cyfra', 'req.symbol': 'znak specjalny',
+    'sent.title': 'Sprawdź skrzynkę',
+    'sent.body': 'Wysłaliśmy link potwierdzający na adres {e}. Otwórz go, aby aktywować konto.',
+    'sent.spam': 'Nic nie przyszło? Sprawdź folder ze spamem.',
+    'sent.resend': 'Wyślij ponownie', 'sent.resendIn': 'Ponownie za {s} s',
+    'sent.change': 'Użyj innego adresu'
   },
 
   en: {
@@ -1496,7 +1545,12 @@ window.T = {
     'pw.0': 'Too weak', 'pw.1': 'Weak', 'pw.2': 'Fair', 'pw.3': 'Good', 'pw.4': 'Strong',
     'pw.need': 'Missing:',
     'req.len': 'at least 8 characters', 'req.case': 'upper and lower case',
-    'req.digit': 'a number', 'req.symbol': 'a symbol'
+    'req.digit': 'a number', 'req.symbol': 'a symbol',
+    'sent.title': 'Check your inbox',
+    'sent.body': 'We sent a confirmation link to {e}. Open it to activate your account.',
+    'sent.spam': 'Nothing yet? Check your spam folder.',
+    'sent.resend': 'Resend email', 'sent.resendIn': 'Resend in {s}s',
+    'sent.change': 'Use a different address'
   },
 
   ru: {
@@ -1584,7 +1638,12 @@ window.T = {
     'pw.0': 'Очень слабый', 'pw.1': 'Слабый', 'pw.2': 'Средний', 'pw.3': 'Хороший', 'pw.4': 'Надёжный',
     'pw.need': 'Не хватает:',
     'req.len': 'минимум 8 символов', 'req.case': 'прописная и строчная буквы',
-    'req.digit': 'цифра', 'req.symbol': 'спецсимвол'
+    'req.digit': 'цифра', 'req.symbol': 'спецсимвол',
+    'sent.title': 'Проверьте почту',
+    'sent.body': 'Мы отправили ссылку для подтверждения на {e}. Откройте её, чтобы активировать аккаунт.',
+    'sent.spam': 'Ничего не пришло? Проверьте папку «Спам».',
+    'sent.resend': 'Отправить ещё раз', 'sent.resendIn': 'Повторно через {s} с',
+    'sent.change': 'Указать другой адрес'
   }
 };
 
@@ -1885,14 +1944,18 @@ if (!window.T[window.LANG]) window.LANG = 'pl';
     panel.querySelector('.forgot').hidden = mode !== 'in';
   };
 
+  // offsetParent filters out the view that is currently hidden — otherwise the
+  // trap would tab into buttons nobody can see
   const focusables = () =>
-    [...panel.querySelectorAll('button, input, a[href]')].filter(el => !el.disabled);
+    [...panel.querySelectorAll('button, input, a[href]')]
+      .filter(el => !el.disabled && el.offsetParent !== null);
 
   let hideTimer = null;
 
   const open = () => {
     clearTimeout(hideTimer);   // re-opening mid-close must not get hidden by the old timer
     lastFocused = document.activeElement;
+    showForm();                // always open on the form, never on a stale confirmation
     paint();
     clearErrors();
     modal.hidden = false;
@@ -1905,6 +1968,7 @@ if (!window.T[window.LANG]) window.LANG = 'pl';
   };
 
   const close = () => {
+    clearInterval(tick);       // stop the resend countdown ticking behind a closed dialog
     modal.classList.remove('open');
     document.documentElement.classList.remove('locked');
     hideTimer = setTimeout(() => { modal.hidden = true; }, 340);
@@ -2063,14 +2127,70 @@ if (!window.T[window.LANG]) window.LANG = 'pl';
 
     if (!okEmail) { form.email.focus(); return; }
     if (!okPw) { form.password.focus(); return; }
-    // no backend yet — this is where the auth call will go
+
+    // no backend yet — the confirmation screen stands in for the real call
+    if (mode === 'up') showSent(form.email.value.trim());
+  });
+
+  /* ---------- confirmation screen ---------- */
+  const authView = document.getElementById('authView');
+  const sentView = document.getElementById('sentView');
+  const resendBtn = document.getElementById('resendBtn');
+  const COOLDOWN = 30;
+  let sentTo = '', tick = null, left = 0;
+
+  const paintSent = () => {
+    const t = T[LANG];
+    document.getElementById('sentTitle').textContent = t['sent.title'];
+    document.getElementById('sentBody').innerHTML =
+      t['sent.body'].replace('{e}', `<b>${sentTo.replace(/[<>&]/g, '')}</b>`);
+    document.getElementById('sentSpam').textContent = t['sent.spam'];
+    document.getElementById('changeEmail').textContent = t['sent.change'];
+    resendBtn.textContent = left > 0
+      ? t['sent.resendIn'].replace('{s}', left)
+      : t['sent.resend'];
+    resendBtn.disabled = left > 0;
+  };
+
+  const startCooldown = () => {
+    clearInterval(tick);
+    left = COOLDOWN;
+    paintSent();
+    tick = setInterval(() => {
+      left--;
+      if (left <= 0) clearInterval(tick);
+      paintSent();
+    }, 1000);
+  };
+
+  const showSent = email => {
+    sentTo = email;
+    authView.hidden = true;
+    sentView.hidden = false;
+    startCooldown();
+    resendBtn.focus();
+  };
+
+  const showForm = () => {
+    clearInterval(tick);          // a running timer would keep firing unseen
+    left = 0;
+    sentView.hidden = true;
+    authView.hidden = false;
+  };
+
+  resendBtn.addEventListener('click', () => { if (left <= 0) startCooldown(); });
+  document.getElementById('changeEmail').addEventListener('click', () => {
+    showForm();
+    form.email.focus();
+    form.email.select();
   });
 
   document.addEventListener('langchange', () => {
     paint();
-    // re-render any message currently on screen in the new language
+    // re-render whatever is currently on screen in the new language
     if (!emailErr.hidden) showError(form.email, emailErr, checkEmail());
     paintPw();
+    if (!sentView.hidden) paintSent();
   });
 })();
 </script>
