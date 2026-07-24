@@ -923,7 +923,42 @@
     border-color: rgba(255, 255, 255, 0.3);
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
   }
-  .field input:user-invalid { border-color: rgba(255, 120, 120, 0.5); }
+  /* the one place colour is allowed in: an error is a functional signal */
+  .field input.bad { border-color: rgba(255, 116, 116, 0.55); }
+  .field input.bad:focus { box-shadow: 0 0 0 3px rgba(255, 116, 116, 0.11); }
+  .field-error {
+    display: block; margin-top: 7px;
+    font-size: 11.5px; font-weight: 300; line-height: 1.4;
+    color: rgba(255, 132, 132, 0.92);
+  }
+  .field-error[hidden] { display: none; }
+  .field-error button {
+    border: none; background: none; padding: 0;
+    font: inherit; color: inherit; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 2px;
+  }
+
+  /* strength meter — segments stay monochrome, the word carries the meaning */
+  .pw { margin-top: 9px; }
+  .pw[hidden] { display: none; }
+  .pw-bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .pw-bars i {
+    height: 2px; border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 300ms ease-out;
+  }
+  .pw[data-score="1"] i:nth-child(-n+1),
+  .pw[data-score="2"] i:nth-child(-n+2),
+  .pw[data-score="3"] i:nth-child(-n+3),
+  .pw[data-score="4"] i:nth-child(-n+4) { background: rgba(255, 255, 255, 0.72); }
+  .pw-info {
+    margin-top: 7px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+    font-size: 11.5px; font-weight: 300;
+    color: rgba(255, 255, 255, 0.38);
+  }
+  .pw-info #pwLabel { color: rgba(255, 255, 255, 0.66); white-space: nowrap; }
+  .pw-info #pwNeed { text-align: right; }
 
   .auth-submit {
     width: 100%; height: 46px;
@@ -1257,14 +1292,23 @@
     <form id="authForm" novalidate>
       <label class="field">
         <span data-i18n="auth.email">Email</span>
-        <input type="email" name="email" autocomplete="email" required>
+        <input type="email" name="email" autocomplete="email" novalidate>
+        <span class="field-error" id="emailErr" role="alert" hidden></span>
       </label>
       <label class="field">
         <span class="field-row">
           <span data-i18n="auth.password">Password</span>
           <a href="#" class="forgot" data-i18n="auth.forgot">Forgot?</a>
         </span>
-        <input type="password" name="password" autocomplete="current-password" required>
+        <input type="password" name="password" autocomplete="current-password">
+        <div class="pw" id="pwMeter" hidden>
+          <div class="pw-bars"><i></i><i></i><i></i><i></i></div>
+          <div class="pw-info">
+            <span id="pwLabel"></span>
+            <span id="pwNeed"></span>
+          </div>
+        </div>
+        <span class="field-error" id="pwErr" role="alert" hidden></span>
       </label>
       <button class="auth-submit" type="submit" id="authSubmit">Sign In</button>
     </form>
@@ -1354,7 +1398,17 @@ window.T = {
     'auth.title.up': 'Załóż konto',
     'auth.sub.up': 'Zacznij analizować nieruchomości w kilka sekund. Bezpłatnie we wczesnym dostępie.',
     'auth.submit.up': 'Załóż konto',
-    'auth.alt.up': 'Masz już konto?', 'auth.altBtn.up': 'Zaloguj się'
+    'auth.alt.up': 'Masz już konto?', 'auth.altBtn.up': 'Zaloguj się',
+    'err.email.empty': 'Podaj adres e-mail',
+    'err.email.invalid': 'Podaj prawidłowy adres e-mail',
+    'err.email.domain': 'Podaj prawidłowy adres e-mail znanego dostawcy',
+    'err.email.typo': 'Czy chodziło o {d}?',
+    'err.pw.empty': 'Podaj hasło',
+    'err.pw.weak': 'Hasło jest za słabe',
+    'pw.0': 'Za słabe', 'pw.1': 'Słabe', 'pw.2': 'Średnie', 'pw.3': 'Dobre', 'pw.4': 'Silne',
+    'pw.need': 'Brakuje:',
+    'req.len': 'co najmniej 8 znaków', 'req.case': 'wielka i mała litera',
+    'req.digit': 'cyfra', 'req.symbol': 'znak specjalny'
   },
 
   en: {
@@ -1432,7 +1486,17 @@ window.T = {
     'auth.title.up': 'Create your account',
     'auth.sub.up': 'Start analyzing properties in seconds. Free while in Early Access.',
     'auth.submit.up': 'Create Account',
-    'auth.alt.up': 'Already have an account?', 'auth.altBtn.up': 'Sign in'
+    'auth.alt.up': 'Already have an account?', 'auth.altBtn.up': 'Sign in',
+    'err.email.empty': 'Enter your email address',
+    'err.email.invalid': 'Enter a valid email address',
+    'err.email.domain': 'Enter a valid email from a known provider',
+    'err.email.typo': 'Did you mean {d}?',
+    'err.pw.empty': 'Enter your password',
+    'err.pw.weak': 'Password is too weak',
+    'pw.0': 'Too weak', 'pw.1': 'Weak', 'pw.2': 'Fair', 'pw.3': 'Good', 'pw.4': 'Strong',
+    'pw.need': 'Missing:',
+    'req.len': 'at least 8 characters', 'req.case': 'upper and lower case',
+    'req.digit': 'a number', 'req.symbol': 'a symbol'
   },
 
   ru: {
@@ -1510,7 +1574,17 @@ window.T = {
     'auth.title.up': 'Создайте аккаунт',
     'auth.sub.up': 'Начните анализировать недвижимость за секунды. Бесплатно в раннем доступе.',
     'auth.submit.up': 'Создать аккаунт',
-    'auth.alt.up': 'Уже есть аккаунт?', 'auth.altBtn.up': 'Войти'
+    'auth.alt.up': 'Уже есть аккаунт?', 'auth.altBtn.up': 'Войти',
+    'err.email.empty': 'Укажите адрес почты',
+    'err.email.invalid': 'Введите корректный адрес почты',
+    'err.email.domain': 'Введите корректный адрес известного почтового сервиса',
+    'err.email.typo': 'Возможно, вы имели в виду {d}?',
+    'err.pw.empty': 'Введите пароль',
+    'err.pw.weak': 'Пароль слишком простой',
+    'pw.0': 'Очень слабый', 'pw.1': 'Слабый', 'pw.2': 'Средний', 'pw.3': 'Хороший', 'pw.4': 'Надёжный',
+    'pw.need': 'Не хватает:',
+    'req.len': 'минимум 8 символов', 'req.case': 'прописная и строчная буквы',
+    'req.digit': 'цифра', 'req.symbol': 'спецсимвол'
   }
 };
 
@@ -1820,6 +1894,7 @@ if (!window.T[window.LANG]) window.LANG = 'pl';
     clearTimeout(hideTimer);   // re-opening mid-close must not get hidden by the old timer
     lastFocused = document.activeElement;
     paint();
+    clearErrors();
     modal.hidden = false;
     document.documentElement.classList.add('locked');
     // focus lands immediately — never gated on animation frames, which browsers
@@ -1854,15 +1929,148 @@ if (!window.T[window.LANG]) window.LANG = 'pl';
   document.getElementById('authToggle').addEventListener('click', () => {
     mode = mode === 'in' ? 'up' : 'in';
     paint();
+    // the rules differ between modes, so carrying a verdict across would mislead
+    clearErrors();
+    paintPw();
     form.email.focus();
+  });
+
+  /* ---------- validation ---------- */
+
+  // Flip to false to accept any well-formed address. Kept strict per request,
+  // but note it also turns away company and university mailboxes.
+  const REQUIRE_KNOWN_DOMAIN = true;
+  const KNOWN = [
+    'gmail.com', 'googlemail.com', 'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+    'icloud.com', 'me.com', 'mac.com', 'yahoo.com', 'yahoo.co.uk', 'aol.com',
+    'proton.me', 'protonmail.com', 'gmx.com', 'gmx.de', 'web.de', 'zoho.com', 'fastmail.com',
+    // Polish providers — the home market
+    'wp.pl', 'o2.pl', 'onet.pl', 'op.pl', 'interia.pl', 'interia.eu', 'gazeta.pl',
+    'poczta.onet.pl', 'tlen.pl', 'vp.pl', 'buziaczek.pl',
+    // Russian-language providers
+    'yandex.ru', 'yandex.com', 'ya.ru', 'mail.ru', 'bk.ru', 'inbox.ru', 'list.ru',
+    'internet.ru', 'rambler.ru', 'ukr.net'
+  ];
+  const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
+
+  // edit distance, capped — only used to spot near-misses like "gmial.com"
+  const dist = (a, b) => {
+    if (Math.abs(a.length - b.length) > 2) return 9;
+    let prev = [...Array(b.length + 1).keys()];
+    for (let i = 1; i <= a.length; i++) {
+      const row = [i];
+      for (let j = 1; j <= b.length; j++) {
+        row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      }
+      prev = row;
+    }
+    return prev[b.length];
+  };
+
+  const nearestDomain = d => {
+    let best = null, bestD = 3;
+    KNOWN.forEach(k => { const x = dist(d, k); if (x < bestD) { bestD = x; best = k; } });
+    return best;
+  };
+
+  const checkEmail = () => {
+    const v = form.email.value.trim();
+    if (!v) return { key: 'err.email.empty' };
+    if (!EMAIL_RE.test(v)) return { key: 'err.email.invalid' };
+    const domain = v.slice(v.lastIndexOf('@') + 1).toLowerCase();
+    if (KNOWN.includes(domain)) return null;
+    const near = nearestDomain(domain);
+    if (near) return { key: 'err.email.typo', fix: v.slice(0, v.lastIndexOf('@') + 1) + near, d: near };
+    return REQUIRE_KNOWN_DOMAIN ? { key: 'err.email.domain' } : null;
+  };
+
+  const scorePw = v => {
+    const missing = [];
+    if (v.length < 8) missing.push('req.len');
+    if (!(/[a-zа-яą-ż]/.test(v) && /[A-ZА-ЯĄ-Ż]/.test(v))) missing.push('req.case');
+    if (!/\d/.test(v)) missing.push('req.digit');
+    if (!/[^\w\s]/.test(v)) missing.push('req.symbol');
+    return { score: 4 - missing.length, missing };
+  };
+
+  const emailErr = document.getElementById('emailErr');
+  const pwErr = document.getElementById('pwErr');
+  const pwMeter = document.getElementById('pwMeter');
+
+  function clearErrors() {
+    [[form.email, emailErr], [form.password, pwErr]].forEach(([input, box]) => {
+      box.hidden = true;
+      input.classList.remove('bad');
+    });
+  }
+
+  const showError = (input, box, res) => {
+    if (!res) {
+      box.hidden = true;
+      input.classList.remove('bad');
+      return true;
+    }
+    const t = T[LANG];
+    box.innerHTML = res.key === 'err.email.typo'
+      ? t['err.email.typo'].replace('{d}', `<button type="button" data-fix="${res.fix}">${res.d}</button>`)
+      : t[res.key];
+    box.hidden = false;
+    input.classList.add('bad');
+    return false;
+  };
+
+  // accept the suggested spelling in one click
+  emailErr.addEventListener('click', e => {
+    const b = e.target.closest('[data-fix]');
+    if (!b) return;
+    form.email.value = b.dataset.fix;
+    showError(form.email, emailErr, checkEmail());
+  });
+
+  const paintPw = () => {
+    if (mode !== 'up') { pwMeter.hidden = true; return; }
+    const v = form.password.value;
+    pwMeter.hidden = !v;
+    if (!v) return;
+    const { score, missing } = scorePw(v);
+    const t = T[LANG];
+    pwMeter.dataset.score = score;
+    document.getElementById('pwLabel').textContent = t[`pw.${score}`];
+    document.getElementById('pwNeed').textContent =
+      missing.length ? `${t['pw.need']} ${missing.map(k => t[k]).join(', ')}` : '';
+  };
+
+  // validate on blur, then keep correcting live once the user has been told
+  form.email.addEventListener('blur', () => showError(form.email, emailErr, checkEmail()));
+  form.email.addEventListener('input', () => {
+    if (!emailErr.hidden) showError(form.email, emailErr, checkEmail());
+  });
+  form.password.addEventListener('input', () => {
+    paintPw();
+    if (!pwErr.hidden) showError(form.password, pwErr, null);
   });
 
   form.addEventListener('submit', e => {
     e.preventDefault();
+    const okEmail = showError(form.email, emailErr, checkEmail());
+    const pwVal = form.password.value;
+    let pwRes = null;
+    if (!pwVal) pwRes = { key: 'err.pw.empty' };
+    // strength is only meaningful when setting a password, not when entering one
+    else if (mode === 'up' && scorePw(pwVal).score < 3) pwRes = { key: 'err.pw.weak' };
+    const okPw = showError(form.password, pwErr, pwRes);
+
+    if (!okEmail) { form.email.focus(); return; }
+    if (!okPw) { form.password.focus(); return; }
     // no backend yet — this is where the auth call will go
   });
 
-  document.addEventListener('langchange', paint);
+  document.addEventListener('langchange', () => {
+    paint();
+    // re-render any message currently on screen in the new language
+    if (!emailErr.hidden) showError(form.email, emailErr, checkEmail());
+    paintPw();
+  });
 })();
 </script>
 
