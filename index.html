@@ -1969,6 +1969,7 @@ if (!window.T[window.LANG]) window.LANG = 'pl';
 
   const close = () => {
     clearInterval(tick);       // stop the resend countdown ticking behind a closed dialog
+    form.password.value = '';  // don't leave a password sitting in a closed form
     modal.classList.remove('open');
     document.documentElement.classList.remove('locked');
     hideTimer = setTimeout(() => { modal.hidden = true; }, 340);
@@ -2105,8 +2106,21 @@ if (!window.T[window.LANG]) window.LANG = 'pl';
       missing.length ? `${t['pw.need']} ${missing.map(k => t[k]).join(', ')}` : '';
   };
 
+  // A click is delivered on release, so if blur validation reflows the panel in
+  // between, the button slides out from under the cursor and the click is lost —
+  // which is why toggling to sign-up used to take two presses. Hold validation
+  // while a control inside the dialog is being pressed.
+  let pressing = false;
+  panel.addEventListener('pointerdown', e => { if (e.target.closest('button, a')) pressing = true; });
+  addEventListener('pointerup', () => { pressing = false; });
+
   // validate on blur, then keep correcting live once the user has been told
-  form.email.addEventListener('blur', () => showError(form.email, emailErr, checkEmail()));
+  form.email.addEventListener('blur', () => {
+    if (pressing) return;
+    // an untouched field has nothing to be wrong about yet — that is submit's job
+    if (!form.email.value.trim()) return;
+    showError(form.email, emailErr, checkEmail());
+  });
   form.email.addEventListener('input', () => {
     if (!emailErr.hidden) showError(form.email, emailErr, checkEmail());
   });
